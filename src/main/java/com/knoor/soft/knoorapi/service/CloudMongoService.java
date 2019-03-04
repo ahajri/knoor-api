@@ -73,9 +73,14 @@ public class CloudMongoService {
 		builder.cursorFinalizerEnabled(true);
 		builder.connectTimeout(15000);
 		builder.connectionsPerHost(10);
-		MongoClientURI uri = new MongoClientURI(cloudMongUrl,builder);
+		MongoClientURI uri = new MongoClientURI(cloudMongUrl, builder);
 		client = new MongoClient(uri);
 		db = client.getDatabase(uri.getDatabase());
+	}
+
+	private void tearDown() {
+		if (client != null)
+			client.close();
 	}
 
 	/**
@@ -88,7 +93,7 @@ public class CloudMongoService {
 			begin();
 			MongoCollection<Document> collection = db.getCollection(collectionName);
 			collection.insertMany(documents);
-			close();
+			tearDown();
 		} catch (Exception e) {
 			throw new BusinessException(e, "Could not insert documents");
 		}
@@ -105,9 +110,11 @@ public class CloudMongoService {
 			begin();
 			MongoCollection<Document> collection = db.getCollection(collectionName);
 			collection.insertOne(document);
-			close();
+			tearDown();
 		} catch (Exception e) {
 			throw new BusinessException(e, "Could not insert document");
+		} finally {
+			tearDown();
 		}
 	}
 
@@ -123,10 +130,11 @@ public class CloudMongoService {
 			MongoCollection<Document> collection = db.getCollection(collectionName);
 			collection.findOneAndReplace(new Document("email", document.get("email")), document,
 					new FindOneAndReplaceOptions().upsert(true));
-			close();
+			tearDown();
 		} catch (Exception e) {
-			e.printStackTrace();
 			throw new BusinessException(e, ErrorMessageEnum.USER_UPADATE_KO.getMessage());
+		} finally {
+			tearDown();
 		}
 	}
 
@@ -135,9 +143,11 @@ public class CloudMongoService {
 			begin();
 			MongoCollection<Document> collection = db.getCollection(collectionName);
 			collection.updateOne(updateQuery, new Document("$set", updated));
-			close();
+			tearDown();
 		} catch (Exception e) {
 			throw new BusinessException(e, ErrorMessageEnum.USER_UPADATE_KO.getMessage());
+		} finally {
+			tearDown();
 		}
 	}
 
@@ -156,7 +166,7 @@ public class CloudMongoService {
 		documentsFI.iterator().forEachRemaining(c -> {
 			documents.add(c);
 		});
-		close();
+		tearDown();
 		return documents;
 	}
 
@@ -170,7 +180,7 @@ public class CloudMongoService {
 			begin();
 			MongoCollection<Document> collection = db.getCollection(collectionName);
 			collection.deleteOne(document);
-			close();
+			tearDown();
 		} catch (Exception e) {
 			throw new BusinessException(e,
 					ErrorMessageEnum.DELETE_DOCUMENT_KO.getMessage(JsonUtils.prettyPrint(document)));
@@ -237,27 +247,16 @@ public class CloudMongoService {
 				result.add(document);
 			}
 
-			
 			return result;
 
 		} catch (Exception e) {
 			throw new BusinessException(e, ErrorMessageEnum.FIND_DOCUMENT_KO.getMessage());
-		}finally {
-			close();
-		}
-	}
-
-	/**
-	 * 
-	 */
-	private void close() {
-		if (client != null) {
-			client.close();
+		} finally {
+			tearDown();
 		}
 	}
 
 	public Collection<Document> findDuplicateDocs(String collectionName) throws BusinessException {
-		begin();
 		return null;
 	}
 

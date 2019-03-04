@@ -140,9 +140,9 @@ public class PrayTimeService {
 
 	
 	
-	public static void main(String[] args) throws BusinessException {
-		PrayTimeService s = new PrayTimeService();
-		System.out.println(s.getPrayTimeByLatLngDate(55.676098, 12.568337, new Date(),"CET").toString());
-	}
+//	public static void main(String[] args) throws BusinessException {
+//		PrayTimeService s = new PrayTimeService();
+//		System.out.println(s.getPrayTimeByLatLngDate(55.676098, 12.568337, new Date(),"CET").toString());
+//	}
 
 }
