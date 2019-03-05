@@ -180,10 +180,11 @@ public class CloudMongoService {
 			begin();
 			MongoCollection<Document> collection = db.getCollection(collectionName);
 			collection.deleteOne(document);
-			tearDown();
 		} catch (Exception e) {
 			throw new BusinessException(e,
 					ErrorMessageEnum.DELETE_DOCUMENT_KO.getMessage(JsonUtils.prettyPrint(document)));
+		}finally {
+			tearDown();
 		}
 	}
 
