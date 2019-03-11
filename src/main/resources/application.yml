@@ -31,10 +31,12 @@ application:
 access:
   token: ${ACCESS_TOKEN}
 file: upload-dir=./hcalendar-uploads
+
 jwt:
   header: Authorization
   expirationInSecond: 86400
   secret: ${JWT_SECRET}
   issuedBy: HEAVEN-CALENDAR
+  
 server:
   port: ${PORT:9005}
