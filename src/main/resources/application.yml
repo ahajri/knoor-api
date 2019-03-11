@@ -28,7 +28,7 @@ jwt:
   header: Authorization
   expirationInSecond: 86400
   secret: ${JWT_SECRET}
-  issuedBy: HEAVEN-CALENDAR
+  issuedBy: KNOOR-API
   
 server:
   port: ${PORT:9005}

@@ -31,7 +31,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/login",
                 "/status",
                 "/swagger-ui.html",
-                "/knoor/api/v1/hadiths",
+                "/api/v1/hadith/**",
                 "/webjars/**"
         };
 
@@ -81,7 +81,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) throws Exception {
         web
                 .ignoring()
-                .antMatchers("/webjars/**","/login", "/swagger-ui.html", "/status")
+                .antMatchers("/webjars/**","/api/v1/hadith/**","/login", "/swagger-ui.html", "/status")
                 .requestMatchers(SECURITY_EXCLUSION_MATCHER);
     }
 

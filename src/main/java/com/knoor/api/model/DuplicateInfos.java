@@ -2,6 +2,7 @@ package com.knoor.api.model;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 public class DuplicateInfos implements Serializable {
 
@@ -10,7 +11,7 @@ public class DuplicateInfos implements Serializable {
 	 */
 	private static final long serialVersionUID = 2175511483562824267L;
 
-	private String hadith;
+	private Map<String,String> _id;
 	private List<Integer> uniqueIds;
 	private int count;
 
@@ -18,12 +19,11 @@ public class DuplicateInfos implements Serializable {
 
 	}
 
-	public String getHadith() {
-		return hadith;
+	public Map<String, String> get_id() {
+		return _id;
 	}
-
-	public void setHadith(String hadith) {
-		this.hadith = hadith;
+	public void set_id(Map<String, String> _id) {
+		this._id = _id;
 	}
 
 	public List<Integer> getUniqueIds() {
