@@ -4,10 +4,18 @@ mlab:
   db.user: ${MLAB_DB_USER}
   db.port: ${MLAB_DB_PORT}
   db.password: ${MLAB_DB_PASSWORD}
+  db.hadith.collection : {MLAB_HADITH_COLLECTION}
   api.key: ${MLAB_API_KEY}
-
 spring:
   data.mongodb.uri: mongodb://${MLAB_DB_USER}:${MLAB_DB_PASSWORD}@${MLAB_DB_HOST}:${MLAB_DB_PORT}/${MLAB_DB_NAME}
+  data:
+    mongodb:
+      database: ${MLAB_DB_NAME}
+      username: ${MLAB_DB_USER}
+      password:
+      - ${MLAB_DB_PASSWORD}
+      port: ${MLAB_DB_PORT}
+      host: ${MLAB_DB_HOST}
   servlet.multipart.enabled: true
   servlet.multipart.file-size-threshold: 2KB
   servlet.multipart.max-file-size: 200MB
@@ -18,23 +26,15 @@ spring:
 email:
   id: ${ADMIN_EMAIL_ID}
   password: ${ADMIN_EMAIL_PASSWORD}
- 
 application:
   key: ${APP_KEY}
-
 access:
   token: ${ACCESS_TOKEN}
-
-
-file:
-  upload-dir=./hcalendar-uploads
-
+file: upload-dir=./hcalendar-uploads
 jwt:
   header: Authorization
-  expirationInSecond : 86400
+  expirationInSecond: 86400
   secret: ${JWT_SECRET}
   issuedBy: HEAVEN-CALENDAR
- 
 server:
   port: 9005
-
