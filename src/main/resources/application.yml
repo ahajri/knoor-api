@@ -37,4 +37,4 @@ jwt:
   secret: ${JWT_SECRET}
   issuedBy: HEAVEN-CALENDAR
 server:
-  port: 9005
+  port: ${PORT:9005}
