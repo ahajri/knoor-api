@@ -4,7 +4,7 @@ mlab:
   db.user: ${MLAB_DB_USER}
   db.port: ${MLAB_DB_PORT}
   db.password: ${MLAB_DB_PASSWORD}
-  db.hadith.collection : {MLAB_HADITH_COLLECTION}
+  db.hadith.collection : ${MLAB_HADITH_COLLECTION}
   api.key: ${MLAB_API_KEY}
 spring:
   data.mongodb.uri: mongodb://${MLAB_DB_USER}:${MLAB_DB_PASSWORD}@${MLAB_DB_HOST}:${MLAB_DB_PORT}/${MLAB_DB_NAME}
