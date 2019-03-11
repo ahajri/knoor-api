@@ -8,14 +8,6 @@ mlab:
   api.key: ${MLAB_API_KEY}
 spring:
   data.mongodb.uri: mongodb://${MLAB_DB_USER}:${MLAB_DB_PASSWORD}@${MLAB_DB_HOST}:${MLAB_DB_PORT}/${MLAB_DB_NAME}
-  data:
-    mongodb:
-      database: ${MLAB_DB_NAME}
-      username: ${MLAB_DB_USER}
-      password:
-      - ${MLAB_DB_PASSWORD}
-      port: ${MLAB_DB_PORT}
-      host: ${MLAB_DB_HOST}
   servlet.multipart.enabled: true
   servlet.multipart.file-size-threshold: 2KB
   servlet.multipart.max-file-size: 200MB
