@@ -31,7 +31,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/login",
                 "/status",
                 "/swagger-ui.html",
-                "/api/v1/hadith/**",
                 "/webjars/**"
         };
 
@@ -74,6 +73,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/v1/event/**")
                 .authenticated()
                 .antMatchers("/api/v1/user/**")
+                .authenticated()
+                .antMatchers("/api/v1/hadith/**")
                 .authenticated();
     }
 
