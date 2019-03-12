@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.GroupOperation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -38,18 +39,20 @@ public class HadithReactiveService {
 		return reactiveMongoTemplate.save(account);
 	}
 
-	public List<DuplicateInfos> findFullDuplicates() {
+	public Flux<DuplicateInfos> findFullDuplicates() {
 		
-//		MatchOperation matchStage = Aggregation
-//				.group(new String[]{"hadith"}).match(new Criteria("foo").is("bar"));
+		GroupOperation groupOps = Aggregation
+				.group("hadith").addToSet("id").as("uniqueIds").count().as("count");
+		
+		MatchOperation countOps = Aggregation.match(new Criteria("count").gt(1));
 //		
 //		ProjectionOperation projectStage = Aggregation.project("foo", "bar.baz");
 //		         
-//		Aggregation aggregation 
-//		  = Aggregation.newAggregation(matchStage, projectStage);
+		Aggregation agg 
+		  = Aggregation.newAggregation(groupOps, countOps);
 //		 
 //		AggregationResults<DuplicateInfos> output 
-//		  = reactiveMongoTemplate.aggregate(aggregation, "foobar", DuplicateInfos.class);
+//		  = reactiveMongoTemplate.aggregate(agg, HadithModel.class, DuplicateInfos.class);
 //		
 //		
 //		
@@ -58,9 +61,8 @@ public class HadithReactiveService {
 //				pipelineOP2(), 
 //				pipelineOPn());
 //
-//		Flux<List<DuplicateInfos>> results = reactiveMongoTemplate.aggregate(agg, "hadiths", List.class);
-//		List<DuplicateInfos> mappedResult = results.getMappedResults();
-		return null;
+		Flux<DuplicateInfos> result = reactiveMongoTemplate.aggregate(agg, HadithModel.class, DuplicateInfos.class);
+		return result;
 
 	}
 
