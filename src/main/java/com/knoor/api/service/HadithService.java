@@ -52,15 +52,13 @@ public class HadithService {
 		/*******************/
 
 		Aggregation agg1 = newAggregation(
-				match(Criteria.where("total").gt(1)),
+				//match(Criteria.where("total").gt(1)),
 				group("hadith").count().as("total"), 
 				project("total").and("hadith").previousOperation(),
 				sort(Sort.Direction.DESC, "total")
 
 		);
-		AggregationResults<Object> gr = mongoTemplate
-				.aggregate(agg1, HadithModel.class,	Object.class);
-		LOG.info("#####000#######" + gr.getMappedResults().size());
+		
 		// Convert the aggregation result into a List
 		AggregationResults<HadithCount> groupResults1 = mongoTemplate
 				.aggregate(agg1, HadithModel.class,	HadithCount.class);
