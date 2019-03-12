@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import  org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
@@ -25,17 +25,17 @@ import com.knoor.api.exception.BusinessException;
 import com.knoor.api.model.DuplicateInfos;
 import com.knoor.api.model.HadithCount;
 import com.knoor.api.model.HadithModel;
+import com.mongodb.BasicDBObject;
 import com.mongodb.Block;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Projections;
 
-
 @Service
 public class HadithService {
-	
+
 	private static final Logger LOG = LoggerFactory.getLogger(HadithService.class);
-	
+
 	@Value("${mlab.db.hadith.collection}")
 	protected String collectionName;
 
@@ -56,75 +56,76 @@ public class HadithService {
 
 	public List<DuplicateInfos> findFullDuplicates() {
 		Block<Document> printBlock = new Block<Document>() {
-	        @Override
-	        public void apply(final Document document) {
-	            LOG.info(document.toJson());
-	        }
-	    };
-	    
-	 MongoCollection<Document> hadithCollection =   mongoTemplate.getDb().getCollection(collectionName);
-	 hadithCollection.aggregate(
-		      Arrays.asList(
-		          Aggregates.project(
-		              Projections.fields(
-		                    Projections.excludeId(),
-		                    Projections.include("name"),
-		                    Projections.computed(
-		                            "firstCategory",
-		                            new Document("$arrayElemAt", Arrays.asList("$categories", 0))
-		                    )
-		              )
-		          )
-		      )
-		).forEach(printBlock);
+			@Override
+			public void apply(final Document document) {
+				LOG.info(document.toJson());
+			}
+		};
+
+		MongoCollection<Document> hadithCollection = mongoTemplate.getDb().getCollection(collectionName);
+		hadithCollection
+				.aggregate(Arrays.asList(
+						Aggregates.project(Projections.fields(Projections.excludeId(), Projections.include("name"),
+								Projections.computed("firstCategory",
+										new Document("$arrayElemAt", Arrays.asList("$categories", 0)))))))
+				.forEach(printBlock);
 		return null;
 
 	}
-	
-	public List<DuplicateInfos> getDuplicateHadith() throws BusinessException{
-		
-	
-		
-		
-		Aggregation agg = newAggregation(
-			group("hadith").addToSet("id").as("uniqueIds")
-			//match(Criteria.where("count").gt(1)),
-			//project("count").and("uniqueIds").previousOperation(),
-			//sort(Sort.Direction.DESC, "count")
-				
+
+	public List<DuplicateInfos> getDuplicateHadith() throws BusinessException {
+
+		/**************/
+		Criteria filterCriteria = Criteria.where("count").gte(1);
+		Sort sort = new Sort(Sort.Direction.DESC, "count");
+
+		Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(filterCriteria),
+				Aggregation.group("hadith").addToSet("$id")
+					.as("uniqueIds").count().as("count"), 
+				Aggregation.sort(sort));
+
+		AggregationResults<DuplicateInfos> aggregationResults = mongoTemplate.aggregate(aggregation,
+				HadithModel.class, DuplicateInfos.class);
+
+		List<DuplicateInfos> r =  aggregationResults.getMappedResults();
+		LOG.info("##############"+r.size());
+
+		/******************/
+		Aggregation agg = newAggregation(group("hadith").addToSet("id").as("uniqueIds"),
+		match(Criteria.where("count").gt(1)),
+		 project("count").and("uniqueIds").previousOperation(),
+		 sort(Sort.Direction.DESC, "count")
+
 		);
 
-		//Convert the aggregation result into a List
-		AggregationResults<DuplicateInfos> groupResults 
-			= mongoTemplate.aggregate(agg, HadithModel.class, DuplicateInfos.class);
+		// Convert the aggregation result into a List
+		AggregationResults<DuplicateInfos> groupResults = mongoTemplate.aggregate(agg, HadithModel.class,
+				DuplicateInfos.class);
 		List<DuplicateInfos> result = groupResults.getMappedResults();
-		
+
 		return result;
-		
+
 	}
-	
+
 	public List<HadithCount> getDuplicateCount() throws BusinessException {
 		List<HadithCount> result = null;
-		
+
 		try {
-			Aggregation agg = newAggregation(
-				group("hadith").count().as("count"),
-				match(Criteria.where("count").gt(1)),
-				project("hadith").and("count").previousOperation(),
-				sort(Sort.Direction.DESC, "count")
-					
+			Aggregation agg = newAggregation(group("hadith").count().as("count"), match(Criteria.where("count").gt(1)),
+					project("hadith").and("count").previousOperation(), sort(Sort.Direction.DESC, "count")
+
 			);
 
-			//Convert the aggregation result into a List
-			AggregationResults<HadithCount> groupResults 
-				= mongoTemplate.aggregate(agg, HadithModel.class, HadithCount.class);
-			 result = groupResults.getMappedResults();
+			// Convert the aggregation result into a List
+			AggregationResults<HadithCount> groupResults = mongoTemplate.aggregate(agg, HadithModel.class,
+					HadithCount.class);
+			result = groupResults.getMappedResults();
 		} catch (Exception e) {
 			throw new BusinessException(e);
 		}
-		
+
 		return result;
-		
+
 	}
 
 }
