@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class HadithModel {
 
 	@Id
-	private ObjectId _id;
+	private String _id;
 	private long id;
 	private long book_id;
 	private int bookVol;
@@ -26,11 +26,11 @@ public class HadithModel {
 	private int id_maasoum1_id;
 	private int id_maasoum2_id;
 
-	public ObjectId get_id() {
+	public String get_id() {
 		return _id;
 	}
 
-	public void set_id(ObjectId _id) {
+	public void set_id(String _id) {
 		this._id = _id;
 	}
 
