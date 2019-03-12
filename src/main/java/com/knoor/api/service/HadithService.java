@@ -79,9 +79,10 @@ public class HadithService {
 		Criteria filterCriteria = Criteria.where("count").gte(1);
 		Sort sort = new Sort(Sort.Direction.DESC, "count");
 
-		Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(filterCriteria),
+		Aggregation aggregation = Aggregation.newAggregation(
 				Aggregation.group("hadith").addToSet("$id")
 					.as("uniqueIds").count().as("count"), 
+					Aggregation.match(filterCriteria),
 				Aggregation.sort(sort));
 
 		AggregationResults<DuplicateInfos> aggregationResults = mongoTemplate.aggregate(aggregation,
