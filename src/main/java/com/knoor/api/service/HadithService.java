@@ -80,7 +80,7 @@ public class HadithService {
 		Sort sort = new Sort(Sort.Direction.DESC, "count");
 
 		Aggregation aggregation = Aggregation.newAggregation(
-				Aggregation.group("hadith").addToSet("id")
+				Aggregation.group("$hadith").addToSet("id")
 					.as("uniqueIds").count().as("count"), 
 					Aggregation.match(filterCriteria),
 				Aggregation.sort(sort));
