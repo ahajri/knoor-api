@@ -34,7 +34,7 @@ import com.knoor.api.utils.HttpUtils;
 import com.knoor.api.utils.JsonUtils;
 
 @RestController
-@RequestMapping("/events")
+@RequestMapping("/api/v1/event")
 public class EventsController {
 
 	private static final String EVENT_COLLECTION = "event";

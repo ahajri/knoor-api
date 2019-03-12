@@ -34,7 +34,7 @@ import com.knoor.api.utils.SecurityUtils;
 
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/v1/user")
 public class UserController  {
 
 	private static final String USER_COLLECTION_NAME = "users";

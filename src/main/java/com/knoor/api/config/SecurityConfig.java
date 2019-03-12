@@ -71,9 +71,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/**/*.css",
                         "/**/*.js")
                 .permitAll()
-                .antMatchers("/events/**")
+                .antMatchers("/api/v1/event/**")
                 .authenticated()
-                .antMatchers("/user/**")
+                .antMatchers("/api/v1/user/**")
                 .authenticated();
     }
 
@@ -81,7 +81,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) throws Exception {
         web
                 .ignoring()
-                .antMatchers("/webjars/**","/api/v1/hadith/**","/login", "/swagger-ui.html", "/status")
+                .antMatchers("/webjars/**","/login", "/swagger-ui.html", "/status")
                 .requestMatchers(SECURITY_EXCLUSION_MATCHER);
     }
 
