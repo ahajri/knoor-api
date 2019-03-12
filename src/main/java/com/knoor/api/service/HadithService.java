@@ -87,10 +87,10 @@ public class HadithService {
 		
 		
 		Aggregation agg = newAggregation(
-			group("hadith").addToSet("id").as("uniqueIds").count().as("count"),
+			group("hadith").addToSet("id").as("uniqueIds")
 			//match(Criteria.where("count").gt(1)),
 			//project("count").and("uniqueIds").previousOperation(),
-			sort(Sort.Direction.DESC, "count")
+			//sort(Sort.Direction.DESC, "count")
 				
 		);
 
