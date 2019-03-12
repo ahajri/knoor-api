@@ -71,7 +71,7 @@ public class HadithService {
 
 		/**************/
 		Criteria filterCriteria = Criteria.where("total").gt(1);
-		Sort sort = new Sort(Sort.Direction.DESC, "toal");
+		Sort sort = new Sort(Sort.Direction.DESC, "total");
 
 		Aggregation aggregation = Aggregation.newAggregation(
 				Aggregation.group("hadith").addToSet("id_hadith").as("uniqueIds").count().as("total"),
