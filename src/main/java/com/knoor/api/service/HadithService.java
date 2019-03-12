@@ -62,26 +62,30 @@ public class HadithService {
 		// Convert the aggregation result into a List
 		AggregationResults<HadithCount> groupResults1 = mongoTemplate
 				.aggregate(agg1, HadithModel.class,	HadithCount.class);
+		
 		List<HadithCount> result1 = groupResults1.getMappedResults();
 
 		LOG.info("#####1#######" + result1.size());
 		
-		return result1;
+		
 
 		/**************/
-		/*Criteria filterCriteria = Criteria.where("count").gt(1);
-		Sort sort = new Sort(Sort.Direction.DESC, "count");
+		Criteria filterCriteria = Criteria.where("total").gt(1);
+		Sort sort = new Sort(Sort.Direction.DESC, "toal");
 
 		Aggregation aggregation = Aggregation.newAggregation(
-				Aggregation.group("hadith").addToSet("id").as("uniqueIds").count().as("count"),
+				Aggregation.group("hadith").addToSet("id_hadith").as("uniqueIds").count().as("total"),
 				Aggregation.match(filterCriteria), Aggregation.sort(sort));
 
-		AggregationResults<DuplicateInfos> aggregationResults = mongoTemplate.aggregate(aggregation, HadithModel.class,
+		AggregationResults<DuplicateInfos> aggregationResults = mongoTemplate
+				.aggregate(aggregation, HadithModel.class,
 				DuplicateInfos.class);
 
 		List<DuplicateInfos> r = aggregationResults.getMappedResults();
-		LOG.info("#######2#######" + r.size());*/
-
+		LOG.info("#######2#######" + r.size());
+		
+		
+		return result1;
 		/******************/
 		/*Aggregation agg = newAggregation(group("hadith").addToSet("id").as("uniqueIds").count().as("count"),
 				match(Criteria.where("count").gt(1)), project("count").and("uniqueIds").previousOperation(),

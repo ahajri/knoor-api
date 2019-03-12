@@ -11,12 +11,11 @@ public class DuplicateInfos implements Serializable {
 	private static final long serialVersionUID = 2175511483562824267L;
 
 	private List<Integer> uniqueIds;
-	private int count;
+	private int total;
 
 	public DuplicateInfos() {
 
 	}
-
 
 	public List<Integer> getUniqueIds() {
 		return uniqueIds;
@@ -26,12 +25,12 @@ public class DuplicateInfos implements Serializable {
 		this.uniqueIds = uniqueIds;
 	}
 
-	public int getCount() {
-		return count;
+	public int getTotal() {
+		return total;
 	}
 
-	public void setCount(int count) {
-		this.count = count;
+	public void setTotal(int total) {
+		this.total = total;
 	}
 
 }
