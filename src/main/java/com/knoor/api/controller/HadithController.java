@@ -43,7 +43,7 @@ public class HadithController {
 		
 		try {
 			result.addAll( hadithService.getDuplicateHadith());
-			LOG.info("===>Find duplicate docs: " + result.size());
+			LOG.info("===>Duplicate Hadiths Count: " + result.size());
 		} catch (BusinessException e) {
 			LOG.error(e.getMessage(), e);
 			throw new RestException(ErrorMessageEnum.DUPLICATE_HADITH_KO.getMessage(e.getMessage()), e,

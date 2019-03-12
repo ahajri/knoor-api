@@ -1,18 +1,16 @@
 package com.knoor.api.model;
 
 public class HadithCount {
-	
-	
-	private String _id;
+	private String hadith;
 
 	private long count;
 
-	public String get_id() {
-		return _id;
+	public String getHadith() {
+		return hadith;
 	}
-	
-	public void set_id(String _id) {
-		this._id = _id;
+
+	public void setHadith(String hadith) {
+		this.hadith = hadith;
 	}
 
 	public long getCount() {
@@ -22,6 +20,5 @@ public class HadithCount {
 	public void setCount(long count) {
 		this.count = count;
 	}
-	
-	
+
 }

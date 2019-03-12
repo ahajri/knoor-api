@@ -52,9 +52,9 @@ public class HadithService {
 		/*******************/
 
 		Aggregation agg1 = newAggregation(
-				// match(Criteria.where("id").lt(1000)),
+				// match(Criteria.where("count").gt(1)),
 				group("hadith").count().as("count"), 
-				project("count").and("_id").previousOperation(),
+				project("count").and("hadith").previousOperation(),
 				sort(Sort.Direction.DESC, "count")
 
 		);
