@@ -17,6 +17,7 @@ import com.knoor.api.enums.ErrorMessageEnum;
 import com.knoor.api.exception.BusinessException;
 import com.knoor.api.exception.RestException;
 import com.knoor.api.model.DuplicateInfos;
+import com.knoor.api.model.HadithCount;
 import com.knoor.api.service.HadithService;
 import com.knoor.api.service.reactive.HadithReactiveService;
 
@@ -36,12 +37,12 @@ public class HadithController {
 
 	@GetMapping(path = "/duplicate")
 	@ResponseBody
-	public ResponseEntity<List<DuplicateInfos>> searchDuplicate() throws RestException {
+	public ResponseEntity<List<HadithCount>> searchDuplicate() throws RestException {
 
-		final List<DuplicateInfos> result = new ArrayList<>();
+		final List<HadithCount> result = new ArrayList<>();
 		
 		try {
-			result.addAll( hadithService.getDuplicateHadith());
+			result.addAll( hadithService.getDuplicateCount());
 			LOG.info("===>Find duplicate docs: " + result.size());
 		} catch (BusinessException e) {
 			LOG.error(e.getMessage(), e);

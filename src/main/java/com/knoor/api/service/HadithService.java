@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import com.knoor.api.exception.BusinessException;
 import com.knoor.api.model.DuplicateInfos;
+import com.knoor.api.model.HadithCount;
 import com.knoor.api.model.HadithModel;
 import com.mongodb.Block;
 import com.mongodb.client.MongoCollection;
@@ -98,6 +99,30 @@ public class HadithService {
 		AggregationResults<DuplicateInfos> groupResults 
 			= mongoTemplate.aggregate(agg, HadithModel.class, DuplicateInfos.class);
 		List<DuplicateInfos> result = groupResults.getMappedResults();
+		
+		return result;
+		
+	}
+	
+	public List<HadithCount> getDuplicateCount() throws BusinessException {
+		List<HadithCount> result = null;
+		
+		try {
+			Aggregation agg = newAggregation(
+				group("hadith").count().as("count"),
+				match(Criteria.where("count").gt(1)),
+				project("hadith").and("count").previousOperation(),
+				sort(Sort.Direction.DESC, "count")
+					
+			);
+
+			//Convert the aggregation result into a List
+			AggregationResults<HadithCount> groupResults 
+				= mongoTemplate.aggregate(agg, HadithModel.class, HadithCount.class);
+			 result = groupResults.getMappedResults();
+		} catch (Exception e) {
+			throw new BusinessException(e);
+		}
 		
 		return result;
 		
