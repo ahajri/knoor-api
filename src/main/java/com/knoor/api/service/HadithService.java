@@ -52,7 +52,7 @@ public class HadithService {
 		/*******************/
 
 		Aggregation agg1 = newAggregation(
-				//match(Criteria.where("total").gt(1)),
+				match(Criteria.where("total").gt(1)),
 				group("hadith").count().as("total"), 
 				project("total").and("hadith").previousOperation(),
 				sort(Sort.Direction.DESC, "total")
