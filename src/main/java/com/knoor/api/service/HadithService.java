@@ -80,7 +80,7 @@ public class HadithService {
 		Aggregation agg1 = newAggregation(
 				//match(Criteria.where("id").lt(1000)),
 				group("hadith").count().as("count"),
-				//project("total").and("hadith").previousOperation(),
+				project("total").and("hadith").previousOperation(),
 				sort(Sort.Direction.DESC, "count")
 					
 			);
