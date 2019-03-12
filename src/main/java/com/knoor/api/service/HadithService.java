@@ -47,11 +47,11 @@ public class HadithService {
 		return mongoTemplate.save(model);
 	}
 
-	public List<HadithCount> getDuplicateHadith() throws BusinessException {
+	public List<DuplicateInfos> getDuplicateHadith() throws BusinessException {
 
 		/*******************/
 
-		Aggregation agg1 = newAggregation(
+		/*Aggregation agg1 = newAggregation(
 				match(Criteria.where("total").gt(1)),
 				group("hadith").count().as("total"), 
 				project("total").and("hadith").previousOperation(),
@@ -65,7 +65,7 @@ public class HadithService {
 		
 		List<HadithCount> result1 = groupResults1.getMappedResults();
 
-		LOG.info("#####1#######" + result1.size());
+		LOG.info("#####1#######" + result1.size());*/
 		
 		
 
@@ -85,7 +85,7 @@ public class HadithService {
 		LOG.info("#######2#######" + r.size());
 		
 		
-		return result1;
+		return r;
 		/******************/
 		/*Aggregation agg = newAggregation(group("hadith").addToSet("id").as("uniqueIds").count().as("count"),
 				match(Criteria.where("count").gt(1)), project("count").and("uniqueIds").previousOperation(),

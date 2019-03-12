@@ -37,9 +37,9 @@ public class HadithController {
 
 	@GetMapping(path = "/duplicate")
 	@ResponseBody
-	public ResponseEntity<List<HadithCount>> searchDuplicate() throws RestException {
+	public ResponseEntity<List<DuplicateInfos>> searchDuplicate() throws RestException {
 
-		final List<HadithCount> result = new ArrayList<>();
+		final List<DuplicateInfos> result = new ArrayList<>();
 		
 		try {
 			result.addAll( hadithService.getDuplicateHadith());
