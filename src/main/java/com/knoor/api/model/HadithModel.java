@@ -9,7 +9,7 @@ public class HadithModel {
 
 	@Id
 	private ObjectId _id;
-	private long id;
+	private long id_hadith;
 	private long book_id;
 	private int bookVol;
 	private int numHadith;
@@ -34,12 +34,12 @@ public class HadithModel {
 		this._id = _id;
 	}
 
-	public long getId() {
-		return id;
+	public long getId_hadith() {
+		return id_hadith;
 	}
-
-	public void setId(long id) {
-		this.id = id;
+	
+	public void setId_hadith(long id_hadith) {
+		this.id_hadith = id_hadith;
 	}
 
 	public long getBook_id() {

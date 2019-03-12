@@ -104,8 +104,10 @@ public class HadithService {
 		List<HadithCount> result = null;
 
 		try {
-			Aggregation agg = newAggregation(group("hadith").count().as("count"), match(Criteria.where("count").gt(1)),
-					project("hadith").and("count").previousOperation(), sort(Sort.Direction.DESC, "count")
+			Aggregation agg = newAggregation(group("hadith").count().as("total"), 
+					match(Criteria.where("total").gt(1)),
+					project("hadith").and("total").previousOperation(), 
+					sort(Sort.Direction.DESC, "count")
 
 			);
 

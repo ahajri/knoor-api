@@ -10,27 +10,26 @@ import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import com.mongodb.reactivestreams.client.MongoClient;
 
 @Configuration
-public class ReactiveMongoConfig  {
-	
-	
+public class ReactiveMongoConfig {
+
 	@Value("${mlab.db.name}")
 	protected String dbName;
 
 	@Autowired
-    MongoClient reactiveMongoClient;
-	
+	MongoClient reactiveMongoClient;
+
 	@Autowired
 	com.mongodb.MongoClient mongoClient;
+
 	
-	 
- 
-    @Bean
-    public ReactiveMongoTemplate reactiveMongoTemplate() {
-        return new ReactiveMongoTemplate( reactiveMongoClient, dbName);
-    }
-    
-    public MongoTemplate mongoTemplate() {
-    	return new MongoTemplate( mongoClient, dbName);
-    }
+
+	@Bean
+	public ReactiveMongoTemplate reactiveMongoTemplate() {
+		return new ReactiveMongoTemplate(reactiveMongoClient, dbName);
+	}
+
+	public MongoTemplate mongoTemplate() {
+		return new MongoTemplate(mongoClient, dbName);
+	}
 
 }
