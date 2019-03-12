@@ -76,11 +76,11 @@ public class HadithService {
 	public List<DuplicateInfos> getDuplicateHadith() throws BusinessException {
 
 		/**************/
-		Criteria filterCriteria = Criteria.where("count").gte(1);
+		Criteria filterCriteria = Criteria.where("count").gt(1);
 		Sort sort = new Sort(Sort.Direction.DESC, "count");
 
 		Aggregation aggregation = Aggregation.newAggregation(
-				Aggregation.group("hadith").addToSet("$id")
+				Aggregation.group("hadith").addToSet("id")
 					.as("uniqueIds").count().as("count"), 
 					Aggregation.match(filterCriteria),
 				Aggregation.sort(sort));
@@ -92,7 +92,7 @@ public class HadithService {
 		LOG.info("##############"+r.size());
 
 		/******************/
-		Aggregation agg = newAggregation(group("hadith").addToSet("id").as("uniqueIds"),
+		Aggregation agg = newAggregation(group("hadith").addToSet("id").as("uniqueIds").count().as("count"),
 		match(Criteria.where("count").gt(1)),
 		 project("count").and("uniqueIds").previousOperation(),
 		 sort(Sort.Direction.DESC, "count")
