@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class HadithModel {
 
 	@Id
-	private String _id;
+	private String mongoId;
 	private long id;
 	private long book_id;
 	private int bookVol;
@@ -26,12 +26,12 @@ public class HadithModel {
 	private int id_maasoum1_id;
 	private int id_maasoum2_id;
 
-	public String get_id() {
-		return _id;
+	public String getMongoId() {
+		return mongoId;
 	}
-
-	public void set_id(String _id) {
-		this._id = _id;
+	
+	public void setMongoId(String mongoId) {
+		this.mongoId = mongoId;
 	}
 
 	public long getId() {
@@ -162,40 +162,6 @@ public class HadithModel {
 		this.id_maasoum2_id = id_maasoum2_id;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((_id == null) ? 0 : _id.hashCode());
-		result = prime * result + (int) (id ^ (id >>> 32));
-		return result;
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		HadithModel other = (HadithModel) obj;
-		if (_id == null) {
-			if (other._id != null)
-				return false;
-		} else if (!_id.equals(other._id))
-			return false;
-		if (id != other.id)
-			return false;
-		return true;
-	}
-	
 	
 
 }
