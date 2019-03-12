@@ -1,5 +1,11 @@
 package com.knoor.api.service;
 
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.project;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.sort;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -10,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import  org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
@@ -21,14 +28,6 @@ import com.mongodb.Block;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Projections;
-
-import  org.springframework.data.mongodb.core.aggregation.Aggregation;
-
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.project;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.sort;
 
 
 @Service
@@ -83,9 +82,14 @@ public class HadithService {
 	
 	public List<DuplicateInfos> getDuplicateHadith() throws BusinessException{
 		
+	
+		
+		
 		Aggregation agg = newAggregation(
-			group("hadith").count().as("count"),
-			project("count").and("hadith").previousOperation(),
+			group("hadith").addToSet("uniqueIds").as("uniqueIds").count().as("count"),
+			match(Criteria.where("count").gt(1)),
+			project("count").and("uniqueIds").previousOperation(),
+			project("_id").andInclude("hadith"),
 			sort(Sort.Direction.DESC, "count")
 				
 		);
