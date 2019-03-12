@@ -74,13 +74,30 @@ public class HadithService {
 	}
 
 	public List<DuplicateInfos> getDuplicateHadith() throws BusinessException {
+		
+		/*******************/
+		
+		Aggregation agg1 = newAggregation(
+				match(Criteria.where("id").lt(1000)),
+				group("hadith").count().as("count"),
+				//project("total").and("hadith").previousOperation(),
+				sort(Sort.Direction.DESC, "count")
+					
+			);
+
+			//Convert the aggregation result into a List
+			AggregationResults<HadithCount> groupResults1 
+				= mongoTemplate.aggregate(agg1, HadithModel.class, HadithCount.class);
+			List<HadithCount> result1 = groupResults1.getMappedResults();
+			
+			LOG.info("#####1#######"+result1.size());
 
 		/**************/
 		Criteria filterCriteria = Criteria.where("count").gt(1);
 		Sort sort = new Sort(Sort.Direction.DESC, "count");
 
 		Aggregation aggregation = Aggregation.newAggregation(
-				Aggregation.group("$hadith").addToSet("id")
+				Aggregation.group("hadith").addToSet("id")
 					.as("uniqueIds").count().as("count"), 
 					Aggregation.match(filterCriteria),
 				Aggregation.sort(sort));
@@ -89,7 +106,7 @@ public class HadithService {
 				HadithModel.class, DuplicateInfos.class);
 
 		List<DuplicateInfos> r =  aggregationResults.getMappedResults();
-		LOG.info("##############"+r.size());
+		LOG.info("#######2#######"+r.size());
 
 		/******************/
 		Aggregation agg = newAggregation(group("hadith").addToSet("id").as("uniqueIds").count().as("count"),
