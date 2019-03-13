@@ -56,14 +56,14 @@ public class HadithService {
 		MatchOperation matchOps = Aggregation.match(Criteria.where("total").gt(1));
 		SortOperation sortOps = Aggregation.sort( new Sort(Sort.Direction.DESC, "total"));
 		GroupOperation groupOps = Aggregation.group("hadith")
-				.addToSet("idHadith").as("uniqueIds").count().as("total");
+				.addToSet("_id").as("uniqueIds").count().as("total");
 		
 		ProjectionOperation projectOps = project("uniqueIds").and("total").previousOperation();
 
 		Aggregation aggregation = Aggregation.newAggregation(
 				groupOps,
-				matchOps, 
 				projectOps,
+				matchOps, 
 				sortOps
 				).withOptions(Aggregation.newAggregationOptions().
 				        allowDiskUse(true).build());
