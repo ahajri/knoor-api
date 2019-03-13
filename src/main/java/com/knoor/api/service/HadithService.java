@@ -61,12 +61,11 @@ public class HadithService {
 		ProjectionOperation projectOps = project("uniqueIds").and("total").previousOperation();
 
 		Aggregation aggregation = Aggregation.newAggregation(
-				matchOps, 
 				groupOps,
+				matchOps, 
 				projectOps,
 				sortOps
-				)
-					.withOptions(Aggregation.newAggregationOptions().
+				).withOptions(Aggregation.newAggregationOptions().
 				        allowDiskUse(true).build());
 		
 		AggregationResults<DuplicateInfos> aggregationResults = mongoTemplate
