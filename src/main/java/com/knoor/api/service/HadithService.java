@@ -75,8 +75,8 @@ public class HadithService {
 
 		Aggregation aggregation = Aggregation.newAggregation(
 				Aggregation.group("hadith").addToSet("id_hadith").as("uniqueIds").count().as("total"),
-				Aggregation.match(filterCriteria), Aggregation.sort(sort));
-
+				Aggregation.match(filterCriteria)/*, Aggregation.sort(sort)*/);
+		
 		AggregationResults<DuplicateInfos> aggregationResults = mongoTemplate
 				.aggregate(aggregation, HadithModel.class,
 				DuplicateInfos.class);
