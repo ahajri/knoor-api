@@ -58,7 +58,7 @@ public class HadithService {
 		GroupOperation groupOps = Aggregation.group("hadith")
 				.addToSet("idHadith").as("uniqueIds").count().as("total");
 		
-		ProjectionOperation projectOps = project("uniqueIds").and("total").previousOperation().and("id").as("id");
+		ProjectionOperation projectOps = project("uniqueIds").and("total").previousOperation();
 
 		Aggregation aggregation = Aggregation.newAggregation(
 				groupOps,
