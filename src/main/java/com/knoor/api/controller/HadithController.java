@@ -21,6 +21,8 @@ import com.knoor.api.model.HadithCount;
 import com.knoor.api.service.HadithService;
 import com.knoor.api.service.reactive.HadithReactiveService;
 
+import reactor.core.publisher.Flux;
+
 @RestController
 @RequestMapping("/api/v1/hadith")
 public class HadithController {
@@ -43,6 +45,24 @@ public class HadithController {
 		
 		try {
 			result.addAll( hadithService.getDuplicateHadith());
+			LOG.info("===>Duplicate Hadiths Count: " + result.size());
+		} catch (BusinessException e) {
+			LOG.error(e.getMessage(), e);
+			throw new RestException(ErrorMessageEnum.DUPLICATE_HADITH_KO.getMessage(e.getMessage()), e,
+					HttpStatus.NOT_FOUND, null);
+		}
+		return ResponseEntity.ok(result);
+	}
+	
+	@GetMapping(path = "/async/duplicate")
+	@ResponseBody
+	public ResponseEntity<List<DuplicateInfos>> searchAsyncDuplicate() throws RestException {
+
+		final List<DuplicateInfos> result = new ArrayList<>();
+		
+		try {
+			Flux<DuplicateInfos> duplicates=hadithReactiveService.findFullDuplicates();
+			duplicates.log().subscribe(result::add);
 			LOG.info("===>Duplicate Hadiths Count: " + result.size());
 		} catch (BusinessException e) {
 			LOG.error(e.getMessage(), e);
