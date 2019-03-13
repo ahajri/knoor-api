@@ -56,7 +56,7 @@ public class HadithService {
 		
 		MatchOperation matchOps = Aggregation.match(Criteria.where("total").gt(1));
 		SortOperation sortOps = Aggregation.sort( new Sort(Sort.Direction.DESC, "total"));
-		GroupOperation groupOps = Aggregation.group("hadith")
+		GroupOperation groupOps = Aggregation.group(new String[]{"hadith","id_hadith"})
 				.addToSet("id_hadith").as("uniqueIds").count().as("total");
 		ProjectionOperation projectOps = project("uniqueIds").and("total").previousOperation();
 
