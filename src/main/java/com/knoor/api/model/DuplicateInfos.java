@@ -12,6 +12,7 @@ public class DuplicateInfos implements Serializable {
 
 	private String id;
 	private List<Long> uniqueIds;
+	private List<Long> id_hadith;
 	private int total;
 
 	public DuplicateInfos() {
@@ -42,9 +43,21 @@ public class DuplicateInfos implements Serializable {
 		this.id = id;
 	}
 
-	@Override
-	public String toString() {
-		return "DuplicateInfos [id=" + id + ", uniqueIds=" + uniqueIds.toString() + ", total=" + total + "]";
+	
+	
+	public List<Long> getId_hadith() {
+		return id_hadith;
 	}
 
+	public void setId_hadith(List<Long> id_hadith) {
+		this.id_hadith = id_hadith;
+	}
+
+	@Override
+	public String toString() {
+		return "DuplicateInfos [id=" + id + ", uniqueIds=" + uniqueIds + ", id_hadith=" + id_hadith + ", total=" + total
+				+ "]";
+	}
+
+	
 }
