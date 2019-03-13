@@ -10,6 +10,7 @@ public class DuplicateInfos implements Serializable {
 	 */
 	private static final long serialVersionUID = 2175511483562824267L;
 
+	private String hadith;
 	private List<Integer> uniqueIds;
 	private int total;
 
@@ -33,4 +34,11 @@ public class DuplicateInfos implements Serializable {
 		this.total = total;
 	}
 
+	public String getHadith() {
+		return hadith;
+	}
+
+	public void setHadith(String hadith) {
+		this.hadith = hadith;
+	}
 }
