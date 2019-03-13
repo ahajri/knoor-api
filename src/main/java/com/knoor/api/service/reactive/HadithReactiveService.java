@@ -52,7 +52,9 @@ public class HadithReactiveService {
 		Sort sort = new Sort(Sort.Direction.DESC, "total");
 		SortOperation sortOps =Aggregation.sort(sort);
 		         
-		Aggregation agg = Aggregation.newAggregation(groupOps, countOps, sortOps);
+		Aggregation agg = Aggregation.newAggregation(groupOps, countOps, sortOps)
+				.withOptions(Aggregation.newAggregationOptions().
+				        allowDiskUse(true).build());
 
 		Flux<DuplicateInfos> result = reactiveMongoTemplate.aggregate(agg, HadithModel.class, DuplicateInfos.class);
 		return result;
