@@ -13,18 +13,18 @@ public class DuplicateInfos implements Serializable {
 	private static final long serialVersionUID = 2175511483562824267L;
 
 	private String id;
-	private List<ObjectId> uniqueIds;
+	private List<Integer> uniqueIds;
 	private int total;
 
 	public DuplicateInfos() {
 
 	}
 
-	public List<ObjectId> getUniqueIds() {
+	public List<Integer> getUniqueIds() {
 		return uniqueIds;
 	}
 
-	public void setUniqueIds(List<ObjectId> uniqueIds) {
+	public void setUniqueIds(List<Integer> uniqueIds) {
 		this.uniqueIds = uniqueIds;
 	}
 
