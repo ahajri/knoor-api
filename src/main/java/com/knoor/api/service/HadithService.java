@@ -65,7 +65,7 @@ public class HadithService {
 				DuplicateInfos.class);
 
 		List<DuplicateInfos> result = aggregationResults.getMappedResults();
-		result.stream().forEach(i -> LOG.info("###Ids:::::>"+i.getUniqueIds().toString()));
+		result.stream().forEach(i -> LOG.info("###Ids:::::>"+i.toString()));
 		LOG.info("#######2#######" + result.size());
 		
 		
