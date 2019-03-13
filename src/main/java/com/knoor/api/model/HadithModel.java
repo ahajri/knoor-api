@@ -41,6 +41,8 @@ public class HadithModel {
 	public void setId_hadith(long id_hadith) {
 		this.id_hadith = id_hadith;
 	}
+	
+	
 
 	public long getBook_id() {
 		return book_id;
