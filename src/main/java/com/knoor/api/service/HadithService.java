@@ -52,11 +52,11 @@ public class HadithService {
 	}
 
 	public List<DuplicateInfos> getDuplicateHadith() throws BusinessException {
-		
+		//Arrays.asList(group(eq("id", "$hadith"), addToSet("uniqueIds", "$id"), sum("total", 1L)), match(gt("total", 1L)), sort(descending("total")))
 		MatchOperation matchOps = Aggregation.match(Criteria.where("total").gt(1));
 		SortOperation sortOps = Aggregation.sort( new Sort(Sort.Direction.DESC, "total"));
 		GroupOperation groupOps = Aggregation.group("hadith")
-				.addToSet("_id").as("uniqueIds").count().as("total");
+				.addToSet("id").as("uniqueIds").count().as("total");
 		
 		ProjectionOperation projectOps = project("uniqueIds").and("total").previousOperation();
 
