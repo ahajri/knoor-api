@@ -12,7 +12,7 @@ public class DuplicateInfos implements Serializable {
 	 */
 	private static final long serialVersionUID = 2175511483562824267L;
 
-//	private String id;
+	private String id;
 	private List<ObjectId> uniqueIds;
 	private int total;
 
@@ -36,20 +36,20 @@ public class DuplicateInfos implements Serializable {
 		this.total = total;
 	}
 
-//	public String getId() {
-//		return id;
-//	}
-//
-//	public void setId(String id) {
-//		this.id = id;
-//	}
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	
 	
 	
 	@Override
 	public String toString() {
-		return "DuplicateInfos [id=" + null + ", uniqueIds=" + uniqueIds + ", total=" + total + "]";
+		return "DuplicateInfos [id=" + id + ", uniqueIds=" + uniqueIds + ", total=" + total + "]";
 	}
 
 
