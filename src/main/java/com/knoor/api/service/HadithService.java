@@ -62,8 +62,8 @@ public class HadithService {
 
 		Aggregation aggregation = Aggregation.newAggregation(
 				groupOps,
-				projectOps,
 				matchOps, 
+				projectOps,
 				sortOps
 				).withOptions(Aggregation.newAggregationOptions().
 				        allowDiskUse(true).build());
