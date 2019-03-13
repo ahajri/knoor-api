@@ -14,7 +14,7 @@ spring:
   servlet.multipart.max-request-size: 215MB
   batch:
     job:
-      enabled: true
+      enabled: false
 email:
   id: ${ADMIN_EMAIL_ID}
   password: ${ADMIN_EMAIL_PASSWORD}
