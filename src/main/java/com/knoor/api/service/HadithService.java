@@ -54,7 +54,7 @@ public class HadithService {
 		Sort sort = new Sort(Sort.Direction.DESC, "total");
 
 		Aggregation aggregation = Aggregation.newAggregation(
-				Aggregation.group("hadith").addToSet("id").as("uniqueIds").count().as("total"),
+				Aggregation.group("hadith").addToSet("id_hadith").as("uniqueIds").count().as("total"),
 				Aggregation.match(filterCriteria), 
 				Aggregation.sort(sort))
 					.withOptions(Aggregation.newAggregationOptions().
@@ -65,6 +65,7 @@ public class HadithService {
 				DuplicateInfos.class);
 
 		List<DuplicateInfos> result = aggregationResults.getMappedResults();
+		result.stream().forEach(i -> LOG.info("###Ids:::::>"+i.getUniqueIds().toString()));
 		LOG.info("#######2#######" + result.size());
 		
 		
