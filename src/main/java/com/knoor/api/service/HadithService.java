@@ -49,60 +49,31 @@ public class HadithService {
 
 	public List<DuplicateInfos> getDuplicateHadith() throws BusinessException {
 
-		/*******************/
-
-		/*Aggregation agg1 = newAggregation(
-				match(Criteria.where("total").gt(1)),
-				group("hadith").count().as("total"), 
-				project("total").and("hadith").previousOperation(),
-				sort(Sort.Direction.DESC, "total")
-
-		);
 		
-		// Convert the aggregation result into a List
-		AggregationResults<HadithCount> groupResults1 = mongoTemplate
-				.aggregate(agg1, HadithModel.class,	HadithCount.class);
-		
-		List<HadithCount> result1 = groupResults1.getMappedResults();
-
-		LOG.info("#####1#######" + result1.size());*/
-		
-		
-
-		/**************/
 		Criteria filterCriteria = Criteria.where("total").gt(1);
 		Sort sort = new Sort(Sort.Direction.DESC, "total");
 
 		Aggregation aggregation = Aggregation.newAggregation(
-				Aggregation.group("hadith").addToSet("id_hadith").as("uniqueIds").count().as("total"),
-				Aggregation.match(filterCriteria), Aggregation.sort(sort)).withOptions(Aggregation.newAggregationOptions().
+				Aggregation.group("hadith").addToSet("id").as("uniqueIds").count().as("total"),
+				Aggregation.match(filterCriteria), 
+				Aggregation.sort(sort))
+					.withOptions(Aggregation.newAggregationOptions().
 				        allowDiskUse(true).build());
 		
 		AggregationResults<DuplicateInfos> aggregationResults = mongoTemplate
 				.aggregate(aggregation, HadithModel.class,
 				DuplicateInfos.class);
 
-		List<DuplicateInfos> r = aggregationResults.getMappedResults();
-		LOG.info("#######2#######" + r.size());
+		List<DuplicateInfos> result = aggregationResults.getMappedResults();
+		LOG.info("#######2#######" + result.size());
 		
 		
-		return r;
-		/******************/
-		/*Aggregation agg = newAggregation(group("hadith").addToSet("id").as("uniqueIds").count().as("count"),
-				match(Criteria.where("count").gt(1)), project("count").and("uniqueIds").previousOperation(),
-				sort(Sort.Direction.DESC, "count")
-
-		);
-
-		// Convert the aggregation result into a List
-		AggregationResults<DuplicateInfos> groupResults = mongoTemplate.aggregate(agg, HadithModel.class,
-				DuplicateInfos.class);
-		List<DuplicateInfos> result = groupResults.getMappedResults();
-
-		return result;*/
+		return result;
+		
 
 	}
 
+	
 	public List<HadithCount> getDuplicateCount() throws BusinessException {
 		List<HadithCount> result = null;
 

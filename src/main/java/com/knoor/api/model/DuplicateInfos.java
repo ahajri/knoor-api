@@ -11,18 +11,18 @@ public class DuplicateInfos implements Serializable {
 	private static final long serialVersionUID = 2175511483562824267L;
 
 	private String hadith;
-	private List<Integer> uniqueIds;
+	private List<Long> uniqueIds;
 	private int total;
 
 	public DuplicateInfos() {
 
 	}
 
-	public List<Integer> getUniqueIds() {
+	public List<Long> getUniqueIds() {
 		return uniqueIds;
 	}
 
-	public void setUniqueIds(List<Integer> uniqueIds) {
+	public void setUniqueIds(List<Long> uniqueIds) {
 		this.uniqueIds = uniqueIds;
 	}
 
