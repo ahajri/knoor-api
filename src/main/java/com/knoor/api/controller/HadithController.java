@@ -2,6 +2,7 @@ package com.knoor.api.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,11 +42,19 @@ public class HadithController {
 	@ResponseBody
 	public ResponseEntity<List<DuplicateInfos>> searchDuplicate() throws RestException {
 
+//		ListenableFuture<List<DuplicateInfos>> listenableFuture = getRequest.execute(new AsyncCompletionHandler<List<DuplicateInfos>>() {
+//            @Override
+//            public String onCompleted(Response response) throws Exception {
+//                LOG.info("Async Non Blocking Request processing completed");
+//                return "Async Non blocking...";
+//            }
+//        });
+//        return listenableFuture.toCompletableFuture();
 		
 		try {
 			//result.addAll(hadithService.searchFullDuplicate());
 			List<DuplicateInfos> result = hadithService.searchFullDuplicate();
-			LOG.info("Found ====>"+result.size());
+			LOG.info("full duplicate hadiths found ====>"+result.size());
 			return ResponseEntity.ok(result);
 			//LOG.info("===>full uplicate Hadiths Count: " + result.size());
 		} catch (BusinessException e) {

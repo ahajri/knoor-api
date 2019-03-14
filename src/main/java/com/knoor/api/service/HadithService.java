@@ -72,6 +72,7 @@ public class HadithService {
 	public List<DuplicateInfos> searchFullDuplicate() throws BusinessException {
 
 		try {
+			LOG.info("##service::1");
 			final List<DuplicateInfos> result = new LinkedList<>();
 			com.mongodb.client.MongoCollection<Document> hadiths = mongoTemplate.getCollection(collectionName);
 			MongoCursor<Document> cursor =hadiths.aggregate(
@@ -82,6 +83,7 @@ public class HadithService {
 							match(gt("total", 1L)), 
 							sort(descending("total"))))
 					.allowDiskUse(true).iterator();
+			
 			cursor.forEachRemaining(d -> {
 				long total = d.getLong("total");
 				List<Long> uniqueIds = (List<Long>) d.get("uniqueIds");
@@ -90,9 +92,9 @@ public class HadithService {
 				DuplicateInfos duplicateInfos = new DuplicateInfos(hadith, uniqueIds, total);
 				result.add(duplicateInfos);
 			});
-			
+			LOG.info("##service::2");
 
-			result.stream().forEach(d-> LOG.info("####"+d.toString()));
+			result.stream().forEach(d-> LOG.info("##service::3#"+d.toString()));
 			return result;
 		} catch (Exception e) {
 			throw new BusinessException(e);
