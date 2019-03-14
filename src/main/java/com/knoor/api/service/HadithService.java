@@ -69,9 +69,9 @@ public class HadithService {
 	public void searchFullDuplicate() throws BusinessException {
 
 		com.mongodb.client.MongoCollection<Document> hadiths = mongoTemplate.getCollection(collectionName);
-		AggregateIterable<Document> aggs =hadiths.aggregate(Arrays.asList(
+		AggregateIterable<Document> aggs = hadiths.aggregate(Arrays.asList(
 				group(eq("id", "$hadith"), 
-				addToSet("uniqueIds", "$id"), 
+				addToSet("uniqueIds", "$idHadith"), 
 				sum("total", 1L)),
 				match(gt("total", 1L)), sort(descending("total")))).allowDiskUse(true);
 		
