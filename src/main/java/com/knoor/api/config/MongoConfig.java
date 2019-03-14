@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import com.mongodb.reactivestreams.client.MongoClient;
 
 @Configuration
-public class ReactiveMongoConfig {
+public class MongoConfig {
 
 	@Value("${mlab.db.name}")
 	protected String dbName;
@@ -28,6 +28,7 @@ public class ReactiveMongoConfig {
 		return new ReactiveMongoTemplate(reactiveMongoClient, dbName);
 	}
 
+	@Bean
 	public MongoTemplate mongoTemplate() {
 		return new MongoTemplate(mongoClient, dbName);
 	}

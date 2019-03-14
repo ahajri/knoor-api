@@ -72,11 +72,15 @@ public class HadithController {
 	public ResponseEntity<List<DuplicateInfos>> searchAsyncDuplicate() throws RestException {
 		final List<DuplicateInfos> result = new ArrayList<>();
 		try {
-			Flux<DuplicateInfos> duplicates=hadithReactiveService.findFullDuplicates();
+			Flux<DuplicateInfos> duplicates=hadithReactiveService.asyncFullDuplicates();
 			duplicates.log().subscribe(result::add);
 			LOG.info("===>Duplicate Hadiths Count: " + result.size());
 		} catch (BusinessException e) {
 			LOG.error(e.getMessage(), e);
+			throw new RestException(ErrorMessageEnum.DUPLICATE_HADITH_KO.getMessage(e.getMessage()), e,
+					HttpStatus.NOT_FOUND, null);
+		} catch (Exception e) {
+			LOG.error("Grrrrrrr", e);
 			throw new RestException(ErrorMessageEnum.DUPLICATE_HADITH_KO.getMessage(e.getMessage()), e,
 					HttpStatus.NOT_FOUND, null);
 		}

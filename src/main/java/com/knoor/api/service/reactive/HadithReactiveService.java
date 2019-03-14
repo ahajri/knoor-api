@@ -42,7 +42,7 @@ public class HadithReactiveService {
 		return reactiveMongoTemplate.save(account);
 	}
 
-	public Flux<DuplicateInfos> findFullDuplicates() throws BusinessException{
+	public Flux<DuplicateInfos> asyncFullDuplicates() throws BusinessException{
 		
 		GroupOperation groupOps = Aggregation
 				.group("hadith").addToSet("id_hadith").as("uniqueIds").count().as("total");
