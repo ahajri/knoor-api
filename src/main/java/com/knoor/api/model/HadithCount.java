@@ -4,7 +4,6 @@ public class HadithCount {
 	
 	private String _id;
 	private String hadith;
-
 	private long total;
 
 	public String getHadith() {

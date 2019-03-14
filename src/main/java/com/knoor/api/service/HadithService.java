@@ -91,8 +91,8 @@ public class HadithService {
 					match(Criteria.where("total").gt(1)),
 					project("hadith").and("total").previousOperation(), 
 					sort(Sort.Direction.DESC, "count")
-
-			);
+			).withOptions(Aggregation.newAggregationOptions().
+			        allowDiskUse(true).build());
 
 			// Convert the aggregation result into a List
 			AggregationResults<HadithCount> groupResults = mongoTemplate.aggregate(agg, HadithModel.class,
