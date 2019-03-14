@@ -44,6 +44,7 @@ public class HadithController {
 		final List<DuplicateInfos> result = new ArrayList<>();
 		
 		try {
+			hadithService.searchFullDuplicate();
 			result.addAll( hadithService.getDuplicateHadith());
 			LOG.info("===>Duplicate Hadiths Count: " + result.size());
 		} catch (BusinessException e) {

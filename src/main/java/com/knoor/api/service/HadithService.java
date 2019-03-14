@@ -8,6 +8,7 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.sort
 
 import java.util.List;
 
+import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,20 @@ import com.knoor.api.exception.BusinessException;
 import com.knoor.api.model.DuplicateInfos;
 import com.knoor.api.model.HadithCount;
 import com.knoor.api.model.HadithModel;
+import com.mongodb.Block;
+/***/
+import com.mongodb.async.client.MongoCollection;
+import com.mongodb.client.AggregateIterable;
+
+import java.util.Arrays;
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.gt;
+import static com.mongodb.client.model.Aggregates.group;
+import static com.mongodb.client.model.Aggregates.match;
+import static com.mongodb.client.model.Aggregates.sort;
+import static com.mongodb.client.model.Accumulators.addToSet;
+import static com.mongodb.client.model.Accumulators.sum;
+import static com.mongodb.client.model.Sorts.descending;
 
 @Service
 public class HadithService {
@@ -51,49 +66,55 @@ public class HadithService {
 		return mongoTemplate.save(model);
 	}
 
-	public List<DuplicateInfos> getDuplicateHadith() throws BusinessException {
-		//Arrays.asList(group(eq("id", "$hadith"), addToSet("uniqueIds", "$id"), sum("total", 1L)), match(gt("total", 1L)), sort(descending("total")))
-		MatchOperation matchOps = Aggregation.match(Criteria.where("total").gt(1));
-		SortOperation sortOps = Aggregation.sort( new Sort(Sort.Direction.DESC, "total"));
-		GroupOperation groupOps = Aggregation.group("hadith")
-				.addToSet("idHadith").as("uniqueIds").count().as("total");
+	public void searchFullDuplicate() throws BusinessException {
+
+		com.mongodb.client.MongoCollection<Document> hadiths = mongoTemplate.getCollection(collectionName);
+		AggregateIterable<Document> aggs =hadiths.aggregate(Arrays.asList(
+				group(eq("id", "$hadith"), 
+				addToSet("uniqueIds", "$id"), 
+				sum("total", 1L)),
+				match(gt("total", 1L)), sort(descending("total"))));
 		
+		Block<Document> block = new Block<Document>() {
+			
+			@Override
+			public void apply(Document d) {
+				LOG.info("###:D###"+d.toJson());
+			}
+		};
+		aggs.forEach(block);
+	}
+
+	public List<DuplicateInfos> getDuplicateHadith() throws BusinessException {
+		// Arrays.asList(group(eq("id", "$hadith"), addToSet("uniqueIds", "$id"),
+		// sum("total", 1L)), match(gt("total", 1L)), sort(descending("total")))
+		MatchOperation matchOps = Aggregation.match(Criteria.where("total").gt(1));
+		SortOperation sortOps = Aggregation.sort(new Sort(Sort.Direction.DESC, "total"));
+		GroupOperation groupOps = Aggregation.group("hadith").addToSet("idHadith").as("uniqueIds").count().as("total");
+
 		ProjectionOperation projectOps = project("uniqueIds").and("total").previousOperation();
 
-		Aggregation aggregation = Aggregation.newAggregation(
-				groupOps,
-				matchOps, 
-				projectOps,
-				sortOps
-				).withOptions(Aggregation.newAggregationOptions().
-				        allowDiskUse(true).build());
-		
-		AggregationResults<DuplicateInfos> aggregationResults = mongoTemplate
-				.aggregate(aggregation, HadithModel.class,
+		Aggregation aggregation = Aggregation.newAggregation(groupOps, matchOps, projectOps, sortOps)
+				.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+
+		AggregationResults<DuplicateInfos> aggregationResults = mongoTemplate.aggregate(aggregation, HadithModel.class,
 				DuplicateInfos.class);
 
 		List<DuplicateInfos> result = aggregationResults.getMappedResults();
-		result.stream().forEach(i -> LOG.info("###Ids:::::>"+i.toString()));
+		result.stream().forEach(i -> LOG.info("###Ids:::::>" + i.toString()));
 		LOG.info("#######2#######" + result.size());
-		
-		
+
 		return result;
-		
 
 	}
 
-	
 	public List<HadithCount> getDuplicateCount() throws BusinessException {
 		List<HadithCount> result = null;
 
 		try {
-			Aggregation agg = newAggregation(
-					group("hadith").count().as("total"), 
-					match(Criteria.where("total").gt(1)),
-					project("hadith").and("total").previousOperation(), 
-					sort(Sort.Direction.DESC, "total")
-			).withOptions(Aggregation.newAggregationOptions().
-			        allowDiskUse(true).build());
+			Aggregation agg = newAggregation(org.springframework.data.mongodb.core.aggregation.Aggregation.group("hadith").count().as("total"), match(Criteria.where("total").gt(1)),
+					project("hadith").and("total").previousOperation(), sort(Sort.Direction.DESC, "total"))
+							.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
 			// Convert the aggregation result into a List
 			AggregationResults<HadithCount> groupResults = mongoTemplate.aggregate(agg, HadithModel.class,
