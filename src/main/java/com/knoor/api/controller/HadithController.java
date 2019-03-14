@@ -41,17 +41,17 @@ public class HadithController {
 	@ResponseBody
 	public ResponseEntity<List<DuplicateInfos>> searchDuplicate() throws RestException {
 
-		final List<DuplicateInfos> result = new ArrayList<>();
 		
 		try {
-			result.addAll(hadithService.searchFullDuplicate());
-			LOG.info("===>full uplicate Hadiths Count: " + result.size());
+			//result.addAll(hadithService.searchFullDuplicate());
+			return ResponseEntity.ok(hadithService.searchFullDuplicate());
+			//LOG.info("===>full uplicate Hadiths Count: " + result.size());
 		} catch (BusinessException e) {
 			LOG.error(e.getMessage(), e);
 			throw new RestException(ErrorMessageEnum.DUPLICATE_HADITH_KO.getMessage(e.getMessage()), e,
 					HttpStatus.NOT_FOUND, null);
 		}
-		return ResponseEntity.ok(result);
+		
 	}
 	
 	

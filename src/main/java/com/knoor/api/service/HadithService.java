@@ -70,22 +70,37 @@ public class HadithService {
 
 	public List<DuplicateInfos> searchFullDuplicate() throws BusinessException {
 
-		com.mongodb.client.MongoCollection<Document> hadiths = mongoTemplate.getCollection(collectionName);
-		AggregateIterable<Document> aggs = hadiths.aggregate(
-				Arrays.asList(
-						group(eq("id", "$hadith"), 
-						addToSet("uniqueIds", "$idHadith"), 
-						sum("total", 1L)),
-						match(gt("total", 1L)), 
-						sort(descending("total"))))
-				.allowDiskUse(true);
+		try {
+			com.mongodb.client.MongoCollection<Document> hadiths = mongoTemplate.getCollection(collectionName);
+			AggregateIterable<Document> aggs = hadiths.aggregate(
+					Arrays.asList(
+							group(eq("id", "$hadith"), 
+							addToSet("uniqueIds", "$idHadith"), 
+							sum("total", 1L)),
+							match(gt("total", 1L)), 
+							sort(descending("total"))))
+					.allowDiskUse(true);
 
-		final List<DuplicateInfos> result = new LinkedList<>();
+			final List<DuplicateInfos> result = new LinkedList<>();
 
-		Block<Document> block = new Block<Document>() {
+			Block<Document> block = new Block<Document>() {
 
-			@Override
-			public void apply(Document d) {
+				@Override
+				public void apply(Document d) {
+					LOG.info("###:D###" + d.toJson());
+					try {
+						long total = d.getLong("total");
+						List<Long> uniqueIds = (List<Long>) d.get("uniqueIds");
+						Document _id = (Document) d.get("_id");
+						String hadith =  _id.getString("id");
+						result.add(new DuplicateInfos(hadith, uniqueIds, total));
+					} catch (Exception e) {
+						LOG.error("Error Mapping::::", e);
+					}
+					
+				}
+			};
+			for(Document d:aggs){
 				LOG.info("###:D###" + d.toJson());
 				try {
 					long total = d.getLong("total");
@@ -96,23 +111,13 @@ public class HadithService {
 				} catch (Exception e) {
 					LOG.error("Error Mapping::::", e);
 				}
-				
-			}
-		};
-		for(Document d:aggs){
-			LOG.info("###:D###" + d.toJson());
-			try {
-				long total = d.getLong("total");
-				List<Long> uniqueIds = (List<Long>) d.get("uniqueIds");
-				Document _id = (Document) d.get("_id");
-				String hadith =  _id.getString("id");
-				result.add(new DuplicateInfos(hadith, uniqueIds, total));
-			} catch (Exception e) {
-				LOG.error("Error Mapping::::", e);
-			}
-		};
-		
-		return result;
+			};
+			
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(e);
+		}
 	}
 
 	//FIXME
