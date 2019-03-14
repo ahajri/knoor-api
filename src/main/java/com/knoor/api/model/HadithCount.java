@@ -2,7 +2,7 @@ package com.knoor.api.model;
 
 public class HadithCount {
 	
-	private String _id;
+	private String id;
 	private String hadith;
 	private long total;
 
@@ -20,12 +20,12 @@ public class HadithCount {
 	
 	
 	
-	public String get_id() {
-		return _id;
+	public String getId() {
+		return id;
 	}
 
-	public void set_id(String _id) {
-		this._id = _id;
+	public void set_id(String id) {
+		this.id = id;
 	}
 
 	public void setTotal(long total) {
@@ -34,7 +34,7 @@ public class HadithCount {
 
 	@Override
 	public String toString() {
-		return "HadithCount [_id=" + _id + ", hadith=" + hadith + ", total=" + total + "]";
+		return "HadithCount [id=" + id + ", hadith=" + hadith + ", total=" + total + "]";
 	}
 	
 	
