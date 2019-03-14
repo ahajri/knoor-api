@@ -32,6 +32,7 @@ import com.mongodb.Block;
 /***/
 import com.mongodb.async.client.MongoCollection;
 import com.mongodb.client.AggregateIterable;
+import com.mongodb.client.MongoCursor;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -73,25 +74,23 @@ public class HadithService {
 		try {
 			final List<DuplicateInfos> result = new LinkedList<>();
 			com.mongodb.client.MongoCollection<Document> hadiths = mongoTemplate.getCollection(collectionName);
-			hadiths.aggregate(
+			MongoCursor<Document> cursor =hadiths.aggregate(
 					Arrays.asList(
 							group(eq("id", "$hadith"), 
 							addToSet("uniqueIds", "$idHadith"), 
 							sum("total", 1L)),
 							match(gt("total", 1L)), 
 							sort(descending("total"))))
-					.allowDiskUse(true).forEach(new Block<Document>() {
-						@Override
-						public void apply(Document d) {
-							long total = d.getLong("total");
-							List<Long> uniqueIds = (List<Long>) d.get("uniqueIds");
-							Document _id = (Document) d.get("_id");
-							String hadith = _id.getString("id");
-							DuplicateInfos duplicateInfos = new DuplicateInfos(hadith, uniqueIds, total);
-							result.add(duplicateInfos);
-
-						}
-					});
+					.allowDiskUse(true).iterator();
+			cursor.forEachRemaining(d -> {
+				long total = d.getLong("total");
+				List<Long> uniqueIds = (List<Long>) d.get("uniqueIds");
+				Document _id = (Document) d.get("_id");
+				String hadith = _id.getString("id");
+				DuplicateInfos duplicateInfos = new DuplicateInfos(hadith, uniqueIds, total);
+				result.add(duplicateInfos);
+			});
+			
 
 			result.stream().forEach(d-> LOG.info("####"+d.toString()));
 			return result;
