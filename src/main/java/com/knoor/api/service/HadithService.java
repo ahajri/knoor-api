@@ -43,7 +43,7 @@ import static com.mongodb.client.model.Filters.gt;
 import static com.mongodb.client.model.Aggregates.group;
 import static com.mongodb.client.model.Aggregates.match;
 import static com.mongodb.client.model.Aggregates.sort;
-import static com.mongodb.client.model.Aggregates.out;
+import static com.mongodb.client.model.Aggregates.limit;
 import static com.mongodb.client.model.Accumulators.addToSet;
 import static com.mongodb.client.model.Accumulators.sum;
 import static com.mongodb.client.model.Sorts.descending;
@@ -82,7 +82,8 @@ public class HadithService {
 							addToSet("uniqueIds", "$idHadith"), 
 							sum("total", 1L)),
 							match(gt("total", 1L)), 
-							sort(descending("total"))))
+							sort(descending("total")),
+							limit(100)))
 					.allowDiskUse(true).iterator();
 			while(cursor.hasNext()) {
 				Document d = cursor.next();
