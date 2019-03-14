@@ -44,9 +44,8 @@ public class HadithController {
 		final List<DuplicateInfos> result = new ArrayList<>();
 		
 		try {
-			hadithService.searchFullDuplicate();
-			result.addAll( hadithService.getDuplicateHadith());
-			LOG.info("===>Duplicate Hadiths Count: " + result.size());
+			result.addAll(hadithService.searchFullDuplicate());
+			LOG.info("===>full uplicate Hadiths Count: " + result.size());
 		} catch (BusinessException e) {
 			LOG.error(e.getMessage(), e);
 			throw new RestException(ErrorMessageEnum.DUPLICATE_HADITH_KO.getMessage(e.getMessage()), e,
@@ -55,29 +54,12 @@ public class HadithController {
 		return ResponseEntity.ok(result);
 	}
 	
-	@GetMapping(path = "/duplicate1")
-	@ResponseBody
-	public ResponseEntity<List<HadithCount>> countDuplicate() throws RestException {
-
-		final List<HadithCount> result = new ArrayList<>();
-		
-		try {
-			result.addAll( hadithService.getDuplicateCount());
-			LOG.info("===>Duplicate Hadiths Count: " + result.size());
-		} catch (BusinessException e) {
-			LOG.error(e.getMessage(), e);
-			throw new RestException(ErrorMessageEnum.DUPLICATE_HADITH_KO.getMessage(e.getMessage()), e,
-					HttpStatus.NOT_FOUND, null);
-		}
-		return ResponseEntity.ok(result);
-	}
+	
 	
 	@GetMapping(path = "/async/duplicate")
 	@ResponseBody
 	public ResponseEntity<List<DuplicateInfos>> searchAsyncDuplicate() throws RestException {
-
 		final List<DuplicateInfos> result = new ArrayList<>();
-		
 		try {
 			Flux<DuplicateInfos> duplicates=hadithReactiveService.findFullDuplicates();
 			duplicates.log().subscribe(result::add);

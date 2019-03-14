@@ -68,7 +68,7 @@ public class HadithService {
 		return mongoTemplate.save(model);
 	}
 
-	public void searchFullDuplicate() throws BusinessException {
+	public List<DuplicateInfos> searchFullDuplicate() throws BusinessException {
 
 		com.mongodb.client.MongoCollection<Document> hadiths = mongoTemplate.getCollection(collectionName);
 		AggregateIterable<Document> aggs = hadiths.aggregate(
@@ -80,22 +80,24 @@ public class HadithService {
 						sort(descending("total"))))
 				.allowDiskUse(true);
 
-		List<DuplicateInfos> result = new LinkedList<>();
+		final List<DuplicateInfos> result = new LinkedList<>();
 
 		Block<Document> block = new Block<Document>() {
 
 			@Override
 			public void apply(Document d) {
 				LOG.info("###:D###" + d.toJson());
-				//long total = d.getLong("total");
-				LOG.info("###_id::class###" + d.get("_id").getClass());
-				LOG.info("###total::class###" + d.get("total").getClass());
-				LOG.info("###uniqueIds::class###" + d.get("uniqueIds").getClass());
-				//DuplicateInfos duplicateInfos = new DuplicateInfos();
+				long total = d.getLong("total");
+				List<Long> uniqueIds = (List<Long>) d.get("uniqueIds");
+				Document _id = (Document) d.get("_id");
+				String hadith =  _id.getString("id");
+				result.add(new DuplicateInfos(hadith, uniqueIds, total));
 				
 			}
 		};
 		aggs.forEach(block);
+		
+		return result;
 	}
 
 	public List<DuplicateInfos> getDuplicateHadith() throws BusinessException {

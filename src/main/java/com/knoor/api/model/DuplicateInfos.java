@@ -17,6 +17,15 @@ public class DuplicateInfos implements Serializable {
 	public DuplicateInfos() {
 
 	}
+	
+
+	public DuplicateInfos(String id, List<Long> uniqueIds, long total) {
+		super();
+		this.id = id;
+		this.uniqueIds = uniqueIds;
+		this.total = total;
+	}
+
 
 	public List<Long> getUniqueIds() {
 		return uniqueIds;
