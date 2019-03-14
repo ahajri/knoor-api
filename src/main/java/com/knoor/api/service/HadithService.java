@@ -76,7 +76,7 @@ public class HadithService {
 		try {
 			final List<DuplicateInfos> result = new ArrayList<>();
 			com.mongodb.client.MongoCollection<Document> hadiths = mongoTemplate.getCollection(collectionName);
-			/*MongoCursor<Document> cursor =*/hadiths.aggregate(
+			MongoCursor<Document> cursor =hadiths.aggregate(
 					Arrays.asList(
 							group(eq("id", "$hadith"), 
 							addToSet("uniqueIds", "$idHadith"), 
@@ -84,7 +84,7 @@ public class HadithService {
 							match(gt("total", 1L)), 
 							sort(descending("total")),
 							out("duplicate_hadith")))
-					.allowDiskUse(true);/*.iterator();
+					.allowDiskUse(true).iterator();
 			
 			cursor.forEachRemaining(d -> {
 				long total = d.getLong("total");
@@ -95,7 +95,7 @@ public class HadithService {
 				result.add(duplicateInfos);
 			});
 
-			return result;*/
+			/*return result;*/
 		} catch (Exception e) {
 			throw new BusinessException(e);
 		}
