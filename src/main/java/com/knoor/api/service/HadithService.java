@@ -95,7 +95,6 @@ public class HadithService {
 			result.stream().forEach(d-> LOG.info("####"+d.toString()));
 			return result;
 		} catch (Exception e) {
-			e.printStackTrace();
 			throw new BusinessException(e);
 		}
 	}
