@@ -99,7 +99,18 @@ public class HadithService {
 				
 			}
 		};
-		aggs.forEach(block);
+		for(Document d:aggs){
+			LOG.info("###:D###" + d.toJson());
+			try {
+				long total = d.getLong("total");
+				List<Long> uniqueIds = (List<Long>) d.get("uniqueIds");
+				Document _id = (Document) d.get("_id");
+				String hadith =  _id.getString("id");
+				result.add(new DuplicateInfos(hadith, uniqueIds, total));
+			} catch (Exception e) {
+				LOG.error("Error Mapping::::", e);
+			}
+		};
 		
 		return result;
 	}
