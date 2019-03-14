@@ -54,7 +54,7 @@ public class HadithController {
 		return ResponseEntity.ok(result);
 	}
 	
-	@GetMapping(path = "/count/duplicate")
+	@GetMapping(path = "/duplicate1")
 	@ResponseBody
 	public ResponseEntity<List<HadithCount>> countDuplicate() throws RestException {
 
