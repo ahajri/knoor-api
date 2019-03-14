@@ -34,6 +34,8 @@ import com.mongodb.async.client.MongoCollection;
 import com.mongodb.client.AggregateIterable;
 
 import java.util.Arrays;
+import java.util.LinkedList;
+
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.gt;
 import static com.mongodb.client.model.Aggregates.group;
@@ -69,17 +71,27 @@ public class HadithService {
 	public void searchFullDuplicate() throws BusinessException {
 
 		com.mongodb.client.MongoCollection<Document> hadiths = mongoTemplate.getCollection(collectionName);
-		AggregateIterable<Document> aggs = hadiths.aggregate(Arrays.asList(
-				group(eq("id", "$hadith"), 
-				addToSet("uniqueIds", "$idHadith"), 
-				sum("total", 1L)),
-				match(gt("total", 1L)), sort(descending("total")))).allowDiskUse(true);
-		
+		AggregateIterable<Document> aggs = hadiths.aggregate(
+				Arrays.asList(
+						group(eq("id", "$hadith"), 
+						addToSet("uniqueIds", "$idHadith"), 
+						sum("total", 1L)),
+						match(gt("total", 1L)), 
+						sort(descending("total"))))
+				.allowDiskUse(true);
+
+		List<DuplicateInfos> result = new LinkedList<>();
+
 		Block<Document> block = new Block<Document>() {
-			
+
 			@Override
 			public void apply(Document d) {
-				LOG.info("###:D###"+d.toJson());
+				LOG.info("###:D###" + d.toJson());
+				long total = d.getLong("total");
+				LOG.info("###_id###" + d.get("_id"));
+				LOG.info("###_id::class###" + d.get("_id").getClass());
+				DuplicateInfos duplicateInfos = new DuplicateInfos();
+				
 			}
 		};
 		aggs.forEach(block);
@@ -112,8 +124,10 @@ public class HadithService {
 		List<HadithCount> result = null;
 
 		try {
-			Aggregation agg = newAggregation(org.springframework.data.mongodb.core.aggregation.Aggregation.group("hadith").count().as("total"), match(Criteria.where("total").gt(1)),
-					project("hadith").and("total").previousOperation(), sort(Sort.Direction.DESC, "total"))
+			Aggregation agg = newAggregation(
+					org.springframework.data.mongodb.core.aggregation.Aggregation.group("hadith").count().as("total"),
+					match(Criteria.where("total").gt(1)), project("hadith").and("total").previousOperation(),
+					sort(Sort.Direction.DESC, "total"))
 							.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
 			// Convert the aggregation result into a List
