@@ -32,4 +32,11 @@ public class HadithCount {
 		this.total = total;
 	}
 
+	@Override
+	public String toString() {
+		return "HadithCount [_id=" + _id + ", hadith=" + hadith + ", total=" + total + "]";
+	}
+	
+	
+
 }

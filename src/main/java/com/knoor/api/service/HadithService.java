@@ -87,10 +87,11 @@ public class HadithService {
 		List<HadithCount> result = null;
 
 		try {
-			Aggregation agg = newAggregation(group("hadith").count().as("total"), 
+			Aggregation agg = newAggregation(
+					group("hadith").count().as("total"), 
 					match(Criteria.where("total").gt(1)),
 					project("hadith").and("total").previousOperation(), 
-					sort(Sort.Direction.DESC, "count")
+					sort(Sort.Direction.DESC, "total")
 			).withOptions(Aggregation.newAggregationOptions().
 			        allowDiskUse(true).build());
 
