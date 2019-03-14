@@ -34,6 +34,7 @@ import com.mongodb.async.client.MongoCollection;
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.MongoCursor;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 
@@ -42,6 +43,7 @@ import static com.mongodb.client.model.Filters.gt;
 import static com.mongodb.client.model.Aggregates.group;
 import static com.mongodb.client.model.Aggregates.match;
 import static com.mongodb.client.model.Aggregates.sort;
+import static com.mongodb.client.model.Aggregates.out;
 import static com.mongodb.client.model.Accumulators.addToSet;
 import static com.mongodb.client.model.Accumulators.sum;
 import static com.mongodb.client.model.Sorts.descending;
@@ -69,19 +71,20 @@ public class HadithService {
 		return mongoTemplate.save(model);
 	}
 
-	public List<DuplicateInfos> searchFullDuplicate() throws BusinessException {
+	public /*List<DuplicateInfos>*/void searchFullDuplicate() throws BusinessException {
 
 		try {
-			final List<DuplicateInfos> result = new LinkedList<>();
+			final List<DuplicateInfos> result = new ArrayList<>();
 			com.mongodb.client.MongoCollection<Document> hadiths = mongoTemplate.getCollection(collectionName);
-			MongoCursor<Document> cursor =hadiths.aggregate(
+			/*MongoCursor<Document> cursor =*/hadiths.aggregate(
 					Arrays.asList(
 							group(eq("id", "$hadith"), 
 							addToSet("uniqueIds", "$idHadith"), 
 							sum("total", 1L)),
 							match(gt("total", 1L)), 
-							sort(descending("total"))))
-					.allowDiskUse(true).iterator();
+							sort(descending("total")),
+							out("duplicate_hadith")))
+					.allowDiskUse(true);/*.iterator();
 			
 			cursor.forEachRemaining(d -> {
 				long total = d.getLong("total");
@@ -92,7 +95,7 @@ public class HadithService {
 				result.add(duplicateInfos);
 			});
 
-			return result;
+			return result;*/
 		} catch (Exception e) {
 			throw new BusinessException(e);
 		}

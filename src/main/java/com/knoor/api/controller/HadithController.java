@@ -40,7 +40,7 @@ public class HadithController {
 
 	@GetMapping(path = "/duplicate")
 	@ResponseBody
-	public ResponseEntity<List<DuplicateInfos>> searchDuplicate() throws RestException {
+	public ResponseEntity<String> searchDuplicate() throws RestException {
 
 //		ListenableFuture<List<DuplicateInfos>> listenableFuture = getRequest.execute(new AsyncCompletionHandler<List<DuplicateInfos>>() {
 //            @Override
@@ -53,9 +53,9 @@ public class HadithController {
 		
 		try {
 			//result.addAll(hadithService.searchFullDuplicate());
-			List<DuplicateInfos> result = hadithService.searchFullDuplicate();
-			LOG.info("full duplicate hadiths found ====>"+result.size());
-			return ResponseEntity.ok(result);
+			/*List<DuplicateInfos> result =*/ hadithService.searchFullDuplicate();
+			//LOG.info("full duplicate hadiths found ====>"+result.size());
+			return ResponseEntity.ok("OK");
 			//LOG.info("===>full uplicate Hadiths Count: " + result.size());
 		} catch (BusinessException e) {
 			LOG.error(e.getMessage(), e);
