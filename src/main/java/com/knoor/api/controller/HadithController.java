@@ -56,7 +56,7 @@ public class HadithController {
 	
 	
 	
-	@GetMapping(path = "/async/duplicate")
+	@GetMapping(path = "/asyncDuplicate")
 	@ResponseBody
 	public ResponseEntity<List<DuplicateInfos>> searchAsyncDuplicate() throws RestException {
 		final List<DuplicateInfos> result = new ArrayList<>();

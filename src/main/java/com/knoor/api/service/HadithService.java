@@ -87,11 +87,15 @@ public class HadithService {
 			@Override
 			public void apply(Document d) {
 				LOG.info("###:D###" + d.toJson());
-				long total = d.getLong("total");
-				List<Long> uniqueIds = (List<Long>) d.get("uniqueIds");
-				Document _id = (Document) d.get("_id");
-				String hadith =  _id.getString("id");
-				result.add(new DuplicateInfos(hadith, uniqueIds, total));
+				try {
+					long total = d.getLong("total");
+					List<Long> uniqueIds = (List<Long>) d.get("uniqueIds");
+					Document _id = (Document) d.get("_id");
+					String hadith =  _id.getString("id");
+					result.add(new DuplicateInfos(hadith, uniqueIds, total));
+				} catch (Exception e) {
+					LOG.error("Error Mapping::::", e);
+				}
 				
 			}
 		};
@@ -100,6 +104,7 @@ public class HadithService {
 		return result;
 	}
 
+	//FIXME
 	public List<DuplicateInfos> getDuplicateHadith() throws BusinessException {
 		// Arrays.asList(group(eq("id", "$hadith"), addToSet("uniqueIds", "$id"),
 		// sum("total", 1L)), match(gt("total", 1L)), sort(descending("total")))
