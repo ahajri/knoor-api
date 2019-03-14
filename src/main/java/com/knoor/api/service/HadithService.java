@@ -73,7 +73,7 @@ public class HadithService {
 				group(eq("id", "$hadith"), 
 				addToSet("uniqueIds", "$id"), 
 				sum("total", 1L)),
-				match(gt("total", 1L)), sort(descending("total"))));
+				match(gt("total", 1L)), sort(descending("total")))).allowDiskUse(true);
 		
 		Block<Document> block = new Block<Document>() {
 			
