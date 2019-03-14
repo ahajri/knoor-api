@@ -61,6 +61,10 @@ public class HadithController {
 			LOG.error(e.getMessage(), e);
 			throw new RestException(ErrorMessageEnum.DUPLICATE_HADITH_KO.getMessage(e.getMessage()), e,
 					HttpStatus.NOT_FOUND, null);
+		}catch (Exception e) {
+			LOG.error("=====Grrrrrrr", e);
+			throw new RestException(ErrorMessageEnum.DUPLICATE_HADITH_KO.getMessage(e.getMessage()), e,
+					HttpStatus.NOT_FOUND, null);
 		}
 		
 	}
