@@ -87,10 +87,11 @@ public class HadithService {
 			@Override
 			public void apply(Document d) {
 				LOG.info("###:D###" + d.toJson());
-				long total = d.getLong("total");
-				LOG.info("###_id###" + d.get("_id"));
+				//long total = d.getLong("total");
 				LOG.info("###_id::class###" + d.get("_id").getClass());
-				DuplicateInfos duplicateInfos = new DuplicateInfos();
+				LOG.info("###total::class###" + d.get("total").getClass());
+				LOG.info("###uniqueIds::class###" + d.get("uniqueIds").getClass());
+				//DuplicateInfos duplicateInfos = new DuplicateInfos();
 				
 			}
 		};
