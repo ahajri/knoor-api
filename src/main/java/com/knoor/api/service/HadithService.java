@@ -71,7 +71,7 @@ public class HadithService {
 		return mongoTemplate.save(model);
 	}
 
-	public /*List<DuplicateInfos>*/void searchFullDuplicate() throws BusinessException {
+	public List<DuplicateInfos> searchFullDuplicate() throws BusinessException {
 
 		try {
 			final List<DuplicateInfos> result = new ArrayList<>();
@@ -82,20 +82,20 @@ public class HadithService {
 							addToSet("uniqueIds", "$idHadith"), 
 							sum("total", 1L)),
 							match(gt("total", 1L)), 
-							sort(descending("total")),
-							out("duplicate_hadith")))
+							sort(descending("total"))))
 					.allowDiskUse(true).iterator();
-			
-			cursor.forEachRemaining(d -> {
+			while(cursor.hasNext()) {
+				Document d = cursor.next();
 				long total = d.getLong("total");
 				List<Long> uniqueIds = (List<Long>) d.get("uniqueIds");
 				Document _id = (Document) d.get("_id");
 				String hadith = _id.getString("id");
 				DuplicateInfos duplicateInfos = new DuplicateInfos(hadith, uniqueIds, total);
 				result.add(duplicateInfos);
-			});
+			}
+			
 
-			/*return result;*/
+			return result;
 		} catch (Exception e) {
 			throw new BusinessException(e);
 		}
