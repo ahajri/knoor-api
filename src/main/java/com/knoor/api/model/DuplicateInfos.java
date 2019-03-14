@@ -10,7 +10,7 @@ public class DuplicateInfos implements Serializable {
 	 */
 	private static final long serialVersionUID = 2175511483562824267L;
 
-	private String id;
+	private String hadith;
 	private List<Long> uniqueIds;
 	private long total;
 
@@ -19,9 +19,9 @@ public class DuplicateInfos implements Serializable {
 	}
 	
 
-	public DuplicateInfos(String id, List<Long> uniqueIds, long total) {
+	public DuplicateInfos(String hadith, List<Long> uniqueIds, long total) {
 		super();
-		this.id = id;
+		this.hadith = hadith;
 		this.uniqueIds = uniqueIds;
 		this.total = total;
 	}
@@ -43,20 +43,21 @@ public class DuplicateInfos implements Serializable {
 		this.total = total;
 	}
 
-	public String getId() {
-		return id;
+	
+	
+	public String getHadith() {
+		return hadith;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+
+	public void setHadith(String hadith) {
+		this.hadith = hadith;
 	}
 
-	
-	
-	
+
 	@Override
 	public String toString() {
-		return "DuplicateInfos [id=" + id + ", uniqueIds=" + uniqueIds + ", total=" + total + "]";
+		return "DuplicateInfos [hadith=" + hadith + ", uniqueIds=" + uniqueIds + ", total=" + total + "]";
 	}
 
 
