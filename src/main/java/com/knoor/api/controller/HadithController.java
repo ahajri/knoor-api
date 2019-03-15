@@ -53,7 +53,7 @@ public class HadithController {
 		
 		try {
 			//result.addAll(hadithService.searchFullDuplicate());
-			List<DuplicateInfos> result = hadithService.searchFullDuplicate();
+			List<DuplicateInfos> result = hadithService.getDuplicateHadith();
 			LOG.info("full duplicate hadiths found ====>"+result.size());
 			return ResponseEntity.ok(result);
 			//LOG.info("===>full uplicate Hadiths Count: " + result.size());

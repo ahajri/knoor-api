@@ -82,8 +82,7 @@ public class HadithService {
 							addToSet("uniqueIds", "$idHadith"), 
 							sum("total", 1L)),
 							match(gt("total", 1L)), 
-							sort(descending("total")),
-							limit(100)))
+							sort(descending("total"))))
 					.allowDiskUse(true).iterator();
 			while(cursor.hasNext()) {
 				Document d = cursor.next();
@@ -95,6 +94,8 @@ public class HadithService {
 				LOG.info("###"+duplicateInfos.toString());
 				result.add(duplicateInfos);
 			}
+			
+			
 			
 
 			return result;
@@ -109,9 +110,9 @@ public class HadithService {
 		// sum("total", 1L)), match(gt("total", 1L)), sort(descending("total")))
 		MatchOperation matchOps = Aggregation.match(Criteria.where("total").gt(1));
 		SortOperation sortOps = Aggregation.sort(new Sort(Sort.Direction.DESC, "total"));
-		GroupOperation groupOps = Aggregation.group("hadith").addToSet("idHadith").as("uniqueIds").count().as("total");
+		GroupOperation groupOps = Aggregation.group("hadith").last("hadith").as("hadith").addToSet("idHadith").as("uniqueIds").count().as("total");
 
-		ProjectionOperation projectOps = project("uniqueIds").and("total").previousOperation();
+		ProjectionOperation projectOps = project("uniqueIds","hadith").and("total").previousOperation();
 
 		Aggregation aggregation = Aggregation.newAggregation(groupOps, matchOps, projectOps, sortOps)
 				.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
@@ -127,26 +128,26 @@ public class HadithService {
 
 	}
 
-	public List<HadithCount> getDuplicateCount() throws BusinessException {
-		List<HadithCount> result = null;
-
-		try {
-			Aggregation agg = newAggregation(
-					org.springframework.data.mongodb.core.aggregation.Aggregation.group("hadith").count().as("total"),
-					match(Criteria.where("total").gt(1)), project("hadith").and("total").previousOperation(),
-					sort(Sort.Direction.DESC, "total"))
-							.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
-
-			// Convert the aggregation result into a List
-			AggregationResults<HadithCount> groupResults = mongoTemplate.aggregate(agg, HadithModel.class,
-					HadithCount.class);
-			result = groupResults.getMappedResults();
-		} catch (Exception e) {
-			throw new BusinessException(e);
-		}
-
-		return result;
-
-	}
+//	public List<HadithCount> getDuplicateCount() throws BusinessException {
+//		List<HadithCount> result = null;
+//
+//		try {
+//			Aggregation agg = newAggregation(
+//					org.springframework.data.mongodb.core.aggregation.Aggregation.group("hadith").count().as("total"),
+//					match(Criteria.where("total").gt(1)), project("hadith").and("total").previousOperation(),
+//					sort(Sort.Direction.DESC, "total"))
+//							.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
+//
+//			// Convert the aggregation result into a List
+//			AggregationResults<HadithCount> groupResults = mongoTemplate.aggregate(agg, HadithModel.class,
+//					HadithCount.class);
+//			result = groupResults.getMappedResults();
+//		} catch (Exception e) {
+//			throw new BusinessException(e);
+//		}
+//
+//		return result;
+//
+//	}
 
 }
