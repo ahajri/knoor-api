@@ -75,7 +75,7 @@ public class HadithService {
 	public List<DuplicateInfos> searchFullDuplicate() throws BusinessException {
 
 		try {
-			final List<DuplicateInfos> result = new ArrayList<>();
+			final List<DuplicateInfos> result = new LinkedList<>();
 			Block<Document> addResultBlock = new Block<Document>() {
 		        @Override
 		        public void apply(final Document d) {
@@ -96,7 +96,7 @@ public class HadithService {
 							sum("total", 1L)),
 							match(gt("total", 1L)), 
 							sort(descending("total"))))
-					.allowDiskUse(true).forEach(addResultBlock);
+					.allowDiskUse(true).batchSize(100).forEach(addResultBlock);
 			
 			/*while(cursor.hasNext()) {
 				Document d = cursor.next();
