@@ -76,15 +76,27 @@ public class HadithService {
 
 		try {
 			final List<DuplicateInfos> result = new ArrayList<>();
+			Block<Document> addResultBlock = new Block<Document>() {
+		        @Override
+		        public void apply(final Document d) {
+		        	long total = d.getLong("total");
+					List<Long> uniqueIds = (List<Long>) d.get("uniqueIds");
+					Document _id = (Document) d.get("_id");
+					String hadith = _id.getString("id");
+					DuplicateInfos duplicateInfos = new DuplicateInfos(hadith, uniqueIds, total);
+					LOG.info("###"+duplicateInfos.toString());
+					result.add(duplicateInfos);
+		        }
+		    };
 			com.mongodb.client.MongoCollection<Document> hadiths = mongoTemplate.getCollection(collectionName);
-			MongoCursor<Document> cursor =hadiths.aggregate(
+			/*MongoCursor<Document> cursor =*/hadiths.aggregate(
 					Arrays.asList(
 							group(eq("id", "$hadith"), 
 							addToSet("uniqueIds", "$idHadith"), 
 							sum("total", 1L)),
 							match(gt("total", 1L)), 
 							sort(descending("total"))))
-					.allowDiskUse(true).iterator();
+					.allowDiskUse(true).forEach(addResultBlock);
 			
 			/*while(cursor.hasNext()) {
 				Document d = cursor.next();
@@ -95,7 +107,7 @@ public class HadithService {
 				DuplicateInfos duplicateInfos = new DuplicateInfos(hadith, uniqueIds, total);
 				LOG.info("###"+duplicateInfos.toString());
 				result.add(duplicateInfos);
-			}*/
+			}
 			
 			cursor.forEachRemaining(d -> {
 				long total = d.getLong("total");
@@ -105,7 +117,7 @@ public class HadithService {
 				DuplicateInfos duplicateInfos = new DuplicateInfos(hadith, uniqueIds, total);
 				LOG.info("###"+duplicateInfos.toString());
 				result.add(duplicateInfos);
-			});
+			});*/
 			
 
 			return result;
