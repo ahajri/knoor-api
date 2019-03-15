@@ -21,8 +21,8 @@ public class HadithModel {
 	private String maasoum2;
 	private String sanad;
 	private String rawi;
-	private boolean suite;
-	private boolean validated;
+	private int suite;
+	private int validated;
 	private int id_maasoum1_id;
 	private int id_maasoum2_id;
 
@@ -132,19 +132,19 @@ public class HadithModel {
 		this.rawi = rawi;
 	}
 
-	public boolean isSuite() {
+	public int isSuite() {
 		return suite;
 	}
 
-	public void setSuite(boolean suite) {
+	public void setSuite(int suite) {
 		this.suite = suite;
 	}
 
-	public boolean isValidated() {
+	public int isValidated() {
 		return validated;
 	}
 
-	public void setValidated(boolean validated) {
+	public void setValidated(int validated) {
 		this.validated = validated;
 	}
 
