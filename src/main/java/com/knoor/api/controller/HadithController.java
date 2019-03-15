@@ -93,24 +93,16 @@ public class HadithController {
 //				});
 //	}
 
-	@GetMapping(path = "/asyncDuplicate")
+	@GetMapping(path = "/async/duplicate")
 	@ResponseBody
-	public ResponseEntity<List<DuplicateInfos>> searchAsyncDuplicate() throws RestException {
-		final List<DuplicateInfos> result = new ArrayList<>();
+	public Flux<DuplicateInfos> searchAsyncDuplicate() throws RestException {
 		try {
-			Flux<DuplicateInfos> duplicates = hadithReactiveService.reactiveFullDuplicate();
-			duplicates.log().subscribe(result::add);
-			LOG.info("===>Duplicate Hadiths Count: " + result.size());
+			return hadithReactiveService.reactiveFullDuplicate();
 		} catch (BusinessException e) {
-			LOG.error(e.getMessage(), e);
+			LOG.error("Ooops", e);
 			throw new RestException(ErrorMessageEnum.DUPLICATE_HADITH_KO.getMessage(e.getMessage()), e,
 					HttpStatus.NOT_FOUND, null);
-		} catch (Exception e) {
-			LOG.error("Grrrrrrr", e);
-			throw new RestException(ErrorMessageEnum.DUPLICATE_HADITH_KO.getMessage(e.getMessage()), e,
-					HttpStatus.NOT_FOUND, null);
-		}
-		return ResponseEntity.ok(result);
+		} 
 	}
 
 }

@@ -24,6 +24,7 @@ import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.GroupOperation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
+import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.aggregation.SortOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -104,14 +105,16 @@ public class HadithReactiveService {
 	public Flux<DuplicateInfos> reactiveFullDuplicate() throws BusinessException{
 		
 		GroupOperation groupOps = Aggregation
-				.group("hadith").addToSet("idHadith").as("uniqueIds").count().as("total");
+				.group("hadith").last("hadith").as("hadith")
+				.addToSet("idHadith").as("uniqueIds").count().as("total");
 		
 		MatchOperation countOps = Aggregation.match(new Criteria("total").gt(1));
 		
-		Sort sort = new Sort(Sort.Direction.DESC, "total");
-		SortOperation sortOps =Aggregation.sort(sort);
+		SortOperation sortOps =Aggregation.sort(new Sort(Sort.Direction.DESC, "total"));
+		
+		ProjectionOperation projectionOps = Aggregation.project("hadith","uniqueIds").and("total").previousOperation();
 		         
-		Aggregation agg = Aggregation.newAggregation(groupOps, countOps, sortOps)
+		Aggregation agg = Aggregation.newAggregation(groupOps, countOps, projectionOps, sortOps)
 				.withOptions(Aggregation.newAggregationOptions().
 				        allowDiskUse(true).build());
 
