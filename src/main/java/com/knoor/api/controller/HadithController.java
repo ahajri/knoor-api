@@ -23,6 +23,7 @@ import com.knoor.api.model.HadithCount;
 import com.knoor.api.model.HadithModel;
 import com.knoor.api.service.HadithService;
 import com.knoor.api.service.reactive.HadithReactiveService;
+import com.mongodb.util.JSON;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -74,11 +75,11 @@ public class HadithController {
 
 	}
 
-	@GetMapping("/test")
-	public Flux<Long> findAll() {
+	@GetMapping("/all")
+	public Flux<String> findAll() {
 
 		Flux<HadithModel> result = hadithReactiveService.reactiveFindAll();
-		return result.map(it -> it.getIdHadith());
+		return result.map(m -> JSON.serialize(m));
 	}
 
 //	@GetMapping(value = "/customer/accounts/{pesel}")
