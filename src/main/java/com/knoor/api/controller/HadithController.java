@@ -17,11 +17,9 @@ import com.knoor.api.enums.ErrorMessageEnum;
 import com.knoor.api.exception.BusinessException;
 import com.knoor.api.exception.RestException;
 import com.knoor.api.model.DuplicateInfos;
-import com.knoor.api.model.DuplicateInfos2;
 import com.knoor.api.model.HadithModel;
 import com.knoor.api.service.HadithService;
 import com.knoor.api.service.reactive.HadithReactiveService;
-import com.mongodb.util.JSON;
 
 import reactor.core.publisher.Flux;
 
@@ -61,14 +59,10 @@ public class HadithController {
 			return ResponseEntity.ok(result);
 			// LOG.info("===>full uplicate Hadiths Count: " + result.size());
 		} catch (BusinessException e) {
-			LOG.error(e.getMessage(), e);
+			LOG.error("Oooops", e);
 			throw new RestException(ErrorMessageEnum.DUPLICATE_HADITH_KO.getMessage(e.getMessage()), e,
 					HttpStatus.NOT_FOUND, null);
-		} catch (Exception e) {
-			LOG.error("=====Grrrrrrr", e);
-			throw new RestException(ErrorMessageEnum.DUPLICATE_HADITH_KO.getMessage(e.getMessage()), e,
-					HttpStatus.NOT_FOUND, null);
-		}
+		} 
 
 	}
 
@@ -76,7 +70,7 @@ public class HadithController {
 	public Flux<String> findAll() {
 
 		Flux<HadithModel> result = hadithReactiveService.reactiveFindAll();
-		return result.map(m -> JSON.serialize(m));
+		return result.map(m -> m.getHadith());
 	}
 
 //	@GetMapping(value = "/customer/accounts/{pesel}")
@@ -92,7 +86,7 @@ public class HadithController {
 
 	@GetMapping(path = "/async/duplicate")
 	@ResponseBody
-	public Flux<DuplicateInfos2> searchAsyncDuplicate() throws RestException {
+	public Flux<DuplicateInfos> searchAsyncDuplicate() throws RestException {
 		try {
 			return hadithReactiveService.reactiveFullDuplicate();
 		} catch (BusinessException e) {
