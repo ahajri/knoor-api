@@ -8,16 +8,18 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
-import com.knoor.api.service.HadithService;
+import com.knoor.api.controller.handler.HadithHandler;
 
 @Configuration
 public class ApiRouter {
 
 	
-//	@Bean
-//	public RouterFunction<ServerResponse> route(HadithService hadithService) {
-//
-//		return RouterFunctions
-//			.route(RequestPredicates.GET("/api/v1/hadith/reactive/duplicate").and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), hadithService::reactiveFullDuplicate);
-//	}
+	@Bean
+	public RouterFunction<ServerResponse> route(HadithHandler handler) {
+
+		return RouterFunctions
+			.route(RequestPredicates.GET("/api/v1/hadith/duplicate1")
+					.and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), 
+						handler::handleFullDuplicate);
+	}
 }
