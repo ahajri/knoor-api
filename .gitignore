@@ -26,6 +26,9 @@ HELP.md
 /.nb-gradle/
 /build/
 
+#dev yml files
+*-dev.yml
+
 # Compiled class file
 *.class
 

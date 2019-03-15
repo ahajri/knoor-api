@@ -31,9 +31,9 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	
-	
-	
+
+
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -189,9 +189,9 @@
 		</dependency>
 		<!-- Mapping -->
 		<dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -205,6 +205,9 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		
 	</build>
+
+	
 
 </project>
