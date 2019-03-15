@@ -1,8 +1,6 @@
 package com.knoor.api.controller;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,14 +17,13 @@ import com.knoor.api.enums.ErrorMessageEnum;
 import com.knoor.api.exception.BusinessException;
 import com.knoor.api.exception.RestException;
 import com.knoor.api.model.DuplicateInfos;
-import com.knoor.api.model.HadithCount;
+import com.knoor.api.model.DuplicateInfos2;
 import com.knoor.api.model.HadithModel;
 import com.knoor.api.service.HadithService;
 import com.knoor.api.service.reactive.HadithReactiveService;
 import com.mongodb.util.JSON;
 
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api/v1/hadith")
@@ -95,7 +92,7 @@ public class HadithController {
 
 	@GetMapping(path = "/async/duplicate")
 	@ResponseBody
-	public Flux<DuplicateInfos> searchAsyncDuplicate() throws RestException {
+	public Flux<DuplicateInfos2> searchAsyncDuplicate() throws RestException {
 		try {
 			return hadithReactiveService.reactiveFullDuplicate();
 		} catch (BusinessException e) {

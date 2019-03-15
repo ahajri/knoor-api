@@ -27,7 +27,6 @@ import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.aggregation.SortOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -36,6 +35,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 
 import com.knoor.api.exception.BusinessException;
 import com.knoor.api.model.DuplicateInfos;
+import com.knoor.api.model.DuplicateInfos2;
 import com.knoor.api.model.HadithModel;
 import com.mongodb.Block;
 import com.mongodb.reactivestreams.client.AggregatePublisher;
@@ -102,7 +102,7 @@ public class HadithReactiveService {
 		
 	}
 
-	public Flux<DuplicateInfos> reactiveFullDuplicate() throws BusinessException{
+	public Flux<DuplicateInfos2> reactiveFullDuplicate() throws BusinessException{
 		
 		GroupOperation groupOps = Aggregation
 				.group("hadith").last("hadith").as("hadith")
@@ -118,7 +118,7 @@ public class HadithReactiveService {
 				.withOptions(Aggregation.newAggregationOptions().
 				        allowDiskUse(true).build());
 
-		Flux<DuplicateInfos> result = reactiveMongoTemplate.aggregate(agg, HadithModel.class, DuplicateInfos.class);
+		Flux<DuplicateInfos2> result = reactiveMongoTemplate.aggregate(agg, HadithModel.class, DuplicateInfos2.class);
 		return result;
 
 	}
