@@ -71,6 +71,7 @@ public class HadithService {
 		return mongoTemplate.save(model);
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<DuplicateInfos> searchFullDuplicate() throws BusinessException {
 
 		try {
@@ -84,7 +85,8 @@ public class HadithService {
 							match(gt("total", 1L)), 
 							sort(descending("total"))))
 					.allowDiskUse(true).iterator();
-			while(cursor.hasNext()) {
+			
+			/*while(cursor.hasNext()) {
 				Document d = cursor.next();
 				long total = d.getLong("total");
 				List<Long> uniqueIds = (List<Long>) d.get("uniqueIds");
@@ -93,9 +95,17 @@ public class HadithService {
 				DuplicateInfos duplicateInfos = new DuplicateInfos(hadith, uniqueIds, total);
 				LOG.info("###"+duplicateInfos.toString());
 				result.add(duplicateInfos);
-			}
+			}*/
 			
-			
+			cursor.forEachRemaining(d -> {
+				long total = d.getLong("total");
+				List<Long> uniqueIds = (List<Long>) d.get("uniqueIds");
+				Document _id = (Document) d.get("_id");
+				String hadith = _id.getString("id");
+				DuplicateInfos duplicateInfos = new DuplicateInfos(hadith, uniqueIds, total);
+				LOG.info("###"+duplicateInfos.toString());
+				result.add(duplicateInfos);
+			});
 			
 
 			return result;
@@ -112,7 +122,7 @@ public class HadithService {
 		SortOperation sortOps = Aggregation.sort(new Sort(Sort.Direction.DESC, "total"));
 		GroupOperation groupOps = Aggregation.group("hadith").last("hadith").as("hadith").addToSet("idHadith").as("uniqueIds").count().as("total");
 
-		ProjectionOperation projectOps = project("uniqueIds","hadith","id").and("total").previousOperation();
+		ProjectionOperation projectOps = project("uniqueIds","hadith").and("total").previousOperation();
 
 		Aggregation aggregation = Aggregation.newAggregation(groupOps, matchOps, projectOps, sortOps)
 				.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
