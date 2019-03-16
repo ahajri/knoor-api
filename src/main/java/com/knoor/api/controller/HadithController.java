@@ -45,9 +45,7 @@ public class HadithController {
 	public ResponseEntity<List<DuplicateInfos>> searchDuplicate(@RequestParam("start") int start,
 			@RequestParam("page") int page ) throws RestException {
 
-
 		try {
-			// result.addAll(hadithService.searchFullDuplicate());
 			List<DuplicateInfos> result = hadithService.searchFullDuplicate(start,page);
 			LOG.info("full duplicate hadiths found ====>" + result.size());
 			return ResponseEntity.ok(result);

@@ -99,7 +99,7 @@ public class HadithService {
 							skip(start*page),
 							limit(page),
 							sort(descending("total"))))
-					.allowDiskUse(true).batchSize(100).forEach(addResultBlock);
+					.allowDiskUse(true).forEach(addResultBlock);
 			
 			
 			
