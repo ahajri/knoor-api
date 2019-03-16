@@ -116,9 +116,9 @@ public class HadithService {
 		// sum("total", 1L)), match(gt("total", 1L)), sort(descending("total")))
 		MatchOperation matchOps = Aggregation.match(Criteria.where("total").gt(1));
 		SortOperation sortOps = Aggregation.sort(new Sort(Sort.Direction.DESC, "total"));
-		GroupOperation groupOps = Aggregation.group("hadith").last("hadith").as("hadith").addToSet("idHadith").as("uniqueIds").count().as("total");
+		GroupOperation groupOps = Aggregation.group("hadith").addToSet("idHadith").as("uniqueIds").count().as("total");
 
-		ProjectionOperation projectOps = project("uniqueIds","hadith").and("total").previousOperation();
+		ProjectionOperation projectOps = project("uniqueIds","hadith","id").and("total").previousOperation();
 
 		Aggregation aggregation = Aggregation.newAggregation(groupOps, matchOps, projectOps, sortOps)
 				.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
