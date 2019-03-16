@@ -1,7 +1,11 @@
 package com.knoor.api.client;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.httpclient.Header;
 import org.apache.http.client.methods.HttpHead;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -13,8 +17,15 @@ import reactor.core.publisher.Mono;
 
 public class HadithWebClient {
 	
+	private static final Logger LOG = LoggerFactory.getLogger(HadithWebClient.class);
+	
 	@Value("${application.root.url}")
 	protected String rootApiUrl;
+	
+	@PostConstruct
+	private void init() {
+		LOG.info("##########rootApiUrl##########"+rootApiUrl);
+	}
 	
 	
 	private WebClient client = WebClient.create(rootApiUrl);
