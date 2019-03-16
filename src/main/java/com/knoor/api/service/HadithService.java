@@ -118,7 +118,7 @@ public class HadithService {
 		SortOperation sortOps = Aggregation.sort(new Sort(Sort.Direction.DESC, "total"));
 		GroupOperation groupOps = Aggregation.group("hadith").last("hadith").as("hadith").addToSet("idHadith").as("uniqueIds").count().as("total");
 
-		ProjectionOperation projectOps = project("uniqueIds","hadith").and("total").previousOperation();
+		ProjectionOperation projectOps = project("uniqueIds","total").and("hadith").previousOperation();
 
 		Aggregation aggregation = Aggregation.newAggregation(groupOps, matchOps, projectOps, sortOps)
 				.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
