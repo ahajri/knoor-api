@@ -20,8 +20,12 @@ spring:
 email:
   id: ${ADMIN_EMAIL_ID}
   password: ${ADMIN_EMAIL_PASSWORD}
+  
+  
 application:
   key: ${APP_KEY}
+  root.url: ${API_ROOT_URL}
+  
 access:
   token: ${ACCESS_TOKEN}
 file: upload-dir=./hcalendar-uploads
