@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -40,24 +42,15 @@ public class HadithController {
 
 	@GetMapping(path = "/duplicate")
 	@ResponseBody
-	public ResponseEntity<List<DuplicateInfos>> searchDuplicate() throws RestException {
+	public ResponseEntity<List<DuplicateInfos>> searchDuplicate(@RequestParam("start") int start,
+			@RequestParam("page") int page ) throws RestException {
 
-		// ListenableFuture<List<DuplicateInfos>> listenableFuture =
-		// getRequest.execute(new AsyncCompletionHandler<List<DuplicateInfos>>() {
-		// @Override
-		// public String onCompleted(Response response) throws Exception {
-		// LOG.info("Async Non Blocking Request processing completed");
-		// return "Async Non blocking...";
-		// }
-		// });
-		// return listenableFuture.toCompletableFuture();
 
 		try {
 			// result.addAll(hadithService.searchFullDuplicate());
-			List<DuplicateInfos> result = hadithService.searchFullDuplicate();
+			List<DuplicateInfos> result = hadithService.searchFullDuplicate(start,page);
 			LOG.info("full duplicate hadiths found ====>" + result.size());
 			return ResponseEntity.ok(result);
-			// LOG.info("===>full uplicate Hadiths Count: " + result.size());
 		} catch (BusinessException e) {
 			LOG.error("Oooops", e);
 			throw new RestException(ErrorMessageEnum.DUPLICATE_HADITH_KO.getMessage(e.getMessage()), e,

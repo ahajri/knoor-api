@@ -44,6 +44,7 @@ import static com.mongodb.client.model.Aggregates.group;
 import static com.mongodb.client.model.Aggregates.match;
 import static com.mongodb.client.model.Aggregates.sort;
 import static com.mongodb.client.model.Aggregates.limit;
+import static com.mongodb.client.model.Aggregates.skip;
 import static com.mongodb.client.model.Accumulators.addToSet;
 import static com.mongodb.client.model.Accumulators.sum;
 import static com.mongodb.client.model.Sorts.descending;
@@ -72,7 +73,7 @@ public class HadithService {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<DuplicateInfos> searchFullDuplicate() throws BusinessException {
+	public List<DuplicateInfos> searchFullDuplicate(int start, int page) throws BusinessException {
 
 		try {
 			final List<DuplicateInfos> result = new LinkedList<>();
@@ -89,35 +90,18 @@ public class HadithService {
 		        }
 		    };
 			com.mongodb.client.MongoCollection<Document> hadiths = mongoTemplate.getCollection(collectionName);
-			/*MongoCursor<Document> cursor =*/hadiths.aggregate(
+			hadiths.aggregate(
 					Arrays.asList(
 							group(eq("id", "$hadith"), 
 							addToSet("uniqueIds", "$idHadith"), 
 							sum("total", 1L)),
-							match(gt("total", 1L)), 
+							match(gt("total", 1L)),
+							skip(start*page),
+							limit(page),
 							sort(descending("total"))))
 					.allowDiskUse(true).batchSize(100).forEach(addResultBlock);
 			
-			/*while(cursor.hasNext()) {
-				Document d = cursor.next();
-				long total = d.getLong("total");
-				List<Long> uniqueIds = (List<Long>) d.get("uniqueIds");
-				Document _id = (Document) d.get("_id");
-				String hadith = _id.getString("id");
-				DuplicateInfos duplicateInfos = new DuplicateInfos(hadith, uniqueIds, total);
-				LOG.info("###"+duplicateInfos.toString());
-				result.add(duplicateInfos);
-			}
 			
-			cursor.forEachRemaining(d -> {
-				long total = d.getLong("total");
-				List<Long> uniqueIds = (List<Long>) d.get("uniqueIds");
-				Document _id = (Document) d.get("_id");
-				String hadith = _id.getString("id");
-				DuplicateInfos duplicateInfos = new DuplicateInfos(hadith, uniqueIds, total);
-				LOG.info("###"+duplicateInfos.toString());
-				result.add(duplicateInfos);
-			});*/
 			
 
 			return result;
