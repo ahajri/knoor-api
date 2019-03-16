@@ -42,11 +42,11 @@ public class HadithController {
 
 	@GetMapping(path = "/duplicate")
 	@ResponseBody
-	public ResponseEntity<List<DuplicateInfos>> searchDuplicate(@RequestParam("start") int start,
-			@RequestParam("page") int page ) throws RestException {
+	public ResponseEntity<List<DuplicateInfos>> searchDuplicate(@RequestParam("start") long start,
+			@RequestParam("page") long page ) throws RestException {
 
 		try {
-			List<DuplicateInfos> result = hadithService.getDuplicateHadith();
+			List<DuplicateInfos> result = hadithService.getDuplicateHadith(start,page);
 			LOG.info("full duplicate hadiths found ====>" + result.size());
 			return ResponseEntity.ok(result);
 		} catch (BusinessException e) {

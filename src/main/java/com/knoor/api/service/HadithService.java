@@ -18,8 +18,10 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.GroupOperation;
+import org.springframework.data.mongodb.core.aggregation.LimitOperation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
+import org.springframework.data.mongodb.core.aggregation.SkipOperation;
 import org.springframework.data.mongodb.core.aggregation.SortOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
@@ -111,16 +113,19 @@ public class HadithService {
 	}
 
 	// FIXME
-	public List<DuplicateInfos> getDuplicateHadith() throws BusinessException {
+	public List<DuplicateInfos> getDuplicateHadith(long start,long page) throws BusinessException {
 		// Arrays.asList(group(eq("id", "$hadith"), addToSet("uniqueIds", "$id"),
 		// sum("total", 1L)), match(gt("total", 1L)), sort(descending("total")))
 		MatchOperation matchOps = Aggregation.match(Criteria.where("total").gt(1));
 		SortOperation sortOps = Aggregation.sort(new Sort(Sort.Direction.DESC, "total"));
 		GroupOperation groupOps = Aggregation.group("hadith").last("hadith").as("hadith").addToSet("idHadith").as("uniqueIds").count().as("total");
-
+		
+		LimitOperation limitOps = Aggregation.limit(page);
+		SkipOperation skipOps = Aggregation.skip(start*page);
+		
 		ProjectionOperation projectOps = project("uniqueIds","total").and("hadith").previousOperation();
 
-		Aggregation aggregation = Aggregation.newAggregation(groupOps, matchOps, projectOps, sortOps)
+		Aggregation aggregation = Aggregation.newAggregation(groupOps, matchOps, projectOps,limitOps, skipOps,sortOps)
 				.withOptions(Aggregation.newAggregationOptions().allowDiskUse(true).build());
 
 		AggregationResults<DuplicateInfos> aggregationResults = mongoTemplate.aggregate(aggregation, HadithModel.class,
