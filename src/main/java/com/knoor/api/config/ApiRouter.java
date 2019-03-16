@@ -18,7 +18,7 @@ public class ApiRouter {
 	public RouterFunction<ServerResponse> route(HadithHandler handler) {
 
 		return RouterFunctions
-			.route(RequestPredicates.GET("/api/v1/hadith/duplicate1")
+			.route(RequestPredicates.GET("/asyncDuplicate")
 					.and(RequestPredicates.accept(MediaType.APPLICATION_JSON)), 
 						handler::handleFullDuplicate);
 	}
