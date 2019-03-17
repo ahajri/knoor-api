@@ -79,7 +79,7 @@ public class HadithController {
 	@ResponseBody
 	public Flux<DuplicateInfos> searchAsyncDuplicate() throws RestException {
 		try {
-			return hadithReactiveService.reactiveFullDuplicate();
+			return hadithReactiveService.reactiveSearchFullDuplicate();
 		} catch (BusinessException e) {
 			LOG.error("Ooops", e);
 			throw new RestException(ErrorMessageEnum.DUPLICATE_HADITH_KO.getMessage(e.getMessage()), e,

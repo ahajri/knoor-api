@@ -101,19 +101,19 @@ public class HadithReactiveService {
 		
 	}
 
-	public Flux<DuplicateInfos> reactiveFullDuplicate() throws BusinessException{
+	public Flux<DuplicateInfos> reactiveSearchFullDuplicate() throws BusinessException{
 		
 		GroupOperation groupOps = Aggregation
 				.group("hadith").last("hadith").as("hadith")
 				.addToSet("idHadith").as("uniqueIds").count().as("total");
 		
-		MatchOperation countOps = Aggregation.match(new Criteria("total").gt(1));
+		MatchOperation matchOps = Aggregation.match(new Criteria("total").gt(1));
 		
 		SortOperation sortOps =Aggregation.sort(new Sort(Sort.Direction.DESC, "total"));
 		
-		ProjectionOperation projectionOps = Aggregation.project("hadith","uniqueIds").and("total").previousOperation();
+		ProjectionOperation projectionOps = Aggregation.project("total","uniqueIds").and("hadith").previousOperation();
 		         
-		Aggregation agg = Aggregation.newAggregation(groupOps, countOps, projectionOps, sortOps)
+		Aggregation agg = Aggregation.newAggregation(groupOps, matchOps, projectionOps, sortOps)
 				.withOptions(Aggregation.newAggregationOptions().
 				        allowDiskUse(true).build());
 
