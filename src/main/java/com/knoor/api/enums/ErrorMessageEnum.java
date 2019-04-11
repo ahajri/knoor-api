@@ -20,7 +20,8 @@ public enum ErrorMessageEnum {
 	SEARCH_USER_KO("Search user failed"),
 	DUPLICATE_HADITH_KO("No duplicate hadith(s) found"),
 	UNAUTHORIZED_RESOURCE("Acesss unauthorized !"),
-	 AUTHENTIFICATION_KO("Authentication failed !"),;
+	AUTHENTIFICATION_KO("Authentication failed !"), 
+	SIMILARITY_KO("Cannot find similarity !");
 
 	private String message;
 

@@ -4,7 +4,15 @@ package com.knoor.api.security;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Data
+@Getter
+@Setter
+@NoArgsConstructor
 public class LoginRequest {
     @NotBlank
     @Email(message="Bad email format !")
@@ -19,26 +27,7 @@ public class LoginRequest {
 		this.password = password;
 	}
 
-	public LoginRequest() {
-		super();
-	}
-
-	public String getEmail() {
-		return email;
-	}
 	
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-    
     
 
 

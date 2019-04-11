@@ -49,7 +49,7 @@ public class KNUserDetailsService implements UserDetailsService {
 			}
 			HUser user = hUsers.get(0);
 			UserPrincipal userPrincipal = new UserPrincipal(user.getEmail(), user.getPassword(),
-					user.getRoles().stream().map(r -> r.getName()).collect(Collectors.toList()));
+					user.getRoles());
 			users.add(userPrincipal);
 			return userPrincipal;
 		} catch (BusinessException e) {

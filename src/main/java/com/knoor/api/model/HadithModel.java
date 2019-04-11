@@ -2,9 +2,13 @@ package com.knoor.api.model;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.TextIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import lombok.ToString;
+
 @Document(collection="hadiths")
+@ToString
 public class HadithModel {
 
 	@Id
@@ -16,6 +20,7 @@ public class HadithModel {
 	private String titrePri;
 	private String titreSec1;
 	private String titreSec2;
+	@TextIndexed
 	private String hadith;
 	private String maasoum1;
 	private String maasoum2;

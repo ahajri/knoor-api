@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,9 +26,12 @@ import com.knoor.api.enums.OperatorEnum;
 import com.knoor.api.exception.BusinessException;
 import com.knoor.api.exception.RestException;
 import com.knoor.api.model.HUser;
+import com.knoor.api.model.UserModel;
+import com.knoor.api.model.dto.UserSessionDTO;
 import com.knoor.api.security.JwtTokenProvider;
 import com.knoor.api.security.LoginRequest;
 import com.knoor.api.service.CloudMongoService;
+import com.knoor.api.service.LoginService;
 
 @RestController
 public class LoginController {
@@ -40,6 +44,9 @@ public class LoginController {
 
 	@Autowired
 	private CloudMongoService cloudMongoService;
+	
+	@Autowired
+	private LoginService loginService;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
@@ -52,6 +59,18 @@ public class LoginController {
 	private static Logger LOG = LoggerFactory.getLogger(LoginController.class);
 
 	private static final String USER_COLLECTION_NAME = "users";
+	
+	@PostMapping(path = "/auth")
+	public ResponseEntity<UserSessionDTO> auth(@Valid @RequestBody LoginRequest loginRequest) throws RestException {
+		try {
+			return ResponseEntity.ok(loginService.login(loginRequest.getEmail(),loginRequest.getPassword()));
+		} catch (BusinessException e) {
+			throw new RestException(e.getMessage(),e,e.getHttpStatus());
+		}
+		
+	}
+
+		
 
 	@PostMapping(path = "/login")
 	public ResponseEntity<HUser> login(@Valid @RequestBody LoginRequest loginRequest) throws RestException {
@@ -77,6 +96,10 @@ public class LoginController {
 		}
 		
 		result=foundUsers.get(0);
+		LOG.info("###getPassword###"+result.getPassword());
+		LOG.info("###match::Password###"+passwordEncoder.encode(loginRequest.getPassword()));
+		String encoded = new BCryptPasswordEncoder().encode(loginRequest.getPassword());
+		LOG.info("##encoded###"+encoded);
 		if (!passwordEncoder.matches(loginRequest.getPassword(), result.getPassword())) {
 			throw new RestException(ErrorMessageEnum.WRONG_PASSWORD.getMessage(),
 					new Exception(ErrorMessageEnum.WRONG_PASSWORD.getMessage()),

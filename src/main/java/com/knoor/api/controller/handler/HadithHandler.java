@@ -56,7 +56,6 @@ public class HadithHandler {
 				Document _id = (Document) d.get("_id");
 				String hadith = _id.getString("id");
 				DuplicateInfos duplicateInfos = new DuplicateInfos(hadith, uniqueIds, total);
-				LOG.info("###"+duplicateInfos.toString());
 				result.add(duplicateInfos);
 	        }
 	    };

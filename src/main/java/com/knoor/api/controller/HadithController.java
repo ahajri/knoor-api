@@ -20,6 +20,7 @@ import com.knoor.api.exception.BusinessException;
 import com.knoor.api.exception.RestException;
 import com.knoor.api.model.DuplicateInfos;
 import com.knoor.api.model.HadithModel;
+import com.knoor.api.model.dto.HadithSimilarityDTO;
 import com.knoor.api.service.HadithService;
 import com.knoor.api.service.reactive.HadithReactiveService;
 
@@ -88,5 +89,38 @@ public class HadithController {
 					HttpStatus.NOT_FOUND, null);
 		} 
 	}
+	
+	@GetMapping(path="/similarity/{idOrigin}/{similarity}")
+	public Flux<HadithSimilarityDTO> searchSimilarity(@PathVariable("idOrigin") long idOrigin,@PathVariable("similarity") float similarity) throws RestException{
+		
+		try {
+			Flux<HadithSimilarityDTO> result =  hadithReactiveService.reactiveSearchSimilarity(idOrigin,similarity);
+			LOG.info("====> last duplicate: "+result);
+			return result;
+		} catch (BusinessException e) {
+			LOG.error("Ooops", e);
+			throw new RestException(ErrorMessageEnum.SIMILARITY_KO.getMessage(String.valueOf(idOrigin)), e,
+					HttpStatus.NOT_FOUND, null);
+		} 
+		
+	}
+	
+	
+	@GetMapping(path="/similarity/{idOrigin}")
+	public Flux<HadithSimilarityDTO> batchSimilarity(@PathVariable("idOrigin") long idOrigin) throws RestException{
+		
+		try {
+			Flux<HadithSimilarityDTO> result =  hadithReactiveService.batchSimilarity(idOrigin);
+			LOG.info("====> last duplicate: "+result);
+			return result;
+		} catch (BusinessException e) {
+			LOG.error("Ooops", e);
+			throw new RestException(ErrorMessageEnum.SIMILARITY_KO.getMessage(String.valueOf(idOrigin)), e,
+					HttpStatus.NOT_FOUND, null);
+		} 
+		
+	}
+	
+	
 
 }

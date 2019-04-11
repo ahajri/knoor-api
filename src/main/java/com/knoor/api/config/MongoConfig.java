@@ -27,10 +27,7 @@ public class MongoConfig {
 	@Autowired
 	com.mongodb.MongoClient mongoClient;
 
-	@Bean
-	public  WebClient webClient() {
-	    return WebClient.builder().clientConnector(new ReactorClientHttpConnector()).baseUrl(baseUrl).build();
-	}
+	
 
 	@Bean
 	public ReactiveMongoTemplate reactiveMongoTemplate() {
@@ -40,6 +37,12 @@ public class MongoConfig {
 	@Bean
 	public MongoTemplate mongoTemplate() {
 		return new MongoTemplate(mongoClient, dbName);
+	}
+	
+	
+	@Bean
+	public  WebClient webClient() {
+	    return WebClient.builder().clientConnector(new ReactorClientHttpConnector()).baseUrl(baseUrl).build();
 	}
 
 }

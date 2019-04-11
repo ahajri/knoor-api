@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -67,7 +68,7 @@ public class UserController  {
 	 * @throws RestException
 	 */
 	@PostMapping(path = "/add")
-	public ResponseEntity<HUser> createUser(@Valid @RequestBody HUser user) throws RestException {
+	public ResponseEntity<HUser> createUser(@Valid @RequestBody HUser user, HttpServletRequest request) throws RestException {
 		
 		// verify if user already created
 		Document query = new Document();
@@ -88,12 +89,13 @@ public class UserController  {
 			String encodedPassword = passwordEncoder.encode(user.getPassword());
 			userDocument.append("password", encodedPassword);
 			userDocument.append("actif", user.isActif());
+			userDocument.append("firstName", user.getFirstName());
+			userDocument.append("lastName", user.getLastName());
+			userDocument.append("gender", user.getGender());
 			userDocument.append("token", SecurityUtils.generateRandomToken());
-			List<Document> roles = new ArrayList<>();
+			List<String> roles = new ArrayList<>();
 			user.getRoles().stream().forEach(r -> {
-				Document roleDocument = new Document("name", r.getName());
-				roleDocument.append("description", r.getDescription());
-				roles.add(roleDocument);
+				roles.add(r);
 			});
 			userDocument.append("roles", roles);
 			cloudMongoService.insertOne(USER_COLLECTION_NAME, userDocument);
@@ -136,18 +138,13 @@ public class UserController  {
 			found.append("email", user.getEmail());
 			found.append("password", user.getPassword());
 			found.append("token", user.getToken());
-			found.append("roles", user.getRoles().stream().map(r -> {
-				Document role = new Document("name", r.getName());
-				role.append("description", r.getDescription());
-				return role;
-			}).collect(Collectors.toSet()));
+			found.append("roles", user.getRoles());
 			found.append("actif", user.isActif());
 			cloudMongoService.updateOne(USER_COLLECTION_NAME, new Document("email", user.getEmail()), found);
 
 		} catch (BusinessException e) {
 			LOG.error(e.getMessage(),e);
-			throw new RestException(ErrorMessageEnum.USER_UPADATE_KO.getMessage(e.getMessage()), e,
-					HttpStatus.INTERNAL_SERVER_ERROR, null);
+			throw new RestException(ErrorMessageEnum.USER_UPADATE_KO.getMessage(e.getMessage()),e,e.getHttpStatus());
 		}
 		return ResponseEntity.ok(MessageEnum.USER_UPDATED_OK.getMessage(user.getEmail()));
 	}
