@@ -38,7 +38,8 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 
 import com.knoor.api.exception.BusinessException;
 import com.knoor.api.model.DuplicateInfos;
-import com.knoor.api.model.HadithModel;
+import com.knoor.api.model.db.HadithModel;
+import com.knoor.api.model.db.HadithSimilarityModel;
 import com.knoor.api.model.dto.HadithSimilarityDTO;
 import com.mongodb.Block;
 import com.mongodb.reactivestreams.client.AggregatePublisher;
@@ -168,7 +169,14 @@ public class HadithReactiveService {
 		return null;
 	}
 	
-	public Flux<HadithSimilarityDTO> batchSimilarity(long idOrigin) throws BusinessException {
+	
+	/**
+	 * 
+	 * @param idOrigin: ID of Hadith
+	 * @return {@link Flux} of {@link HadithSimilarityDTO}
+	 * @throws BusinessException
+	 */
+	public Mono<List<HadithSimilarityModel>> batchSimilarity(long idOrigin) throws BusinessException {
 		Query q = new Query();
 		q.addCriteria(Criteria.where("idHadith").is(idOrigin));
 		Mono<HadithModel> monoHadith = reactiveMongoTemplate.findOne(q, HadithModel.class);
@@ -181,21 +189,21 @@ public class HadithReactiveService {
 		
 		Flux<HadithModel> otherHadiths =reactiveMongoTemplate.find(antiQ,HadithModel.class);
 		
-		otherHadiths.map(h -> {
-			HadithSimilarityDTO dto = new HadithSimilarityDTO();
+		Mono<List<HadithSimilarityModel>> result = otherHadiths.map(h -> {
+			HadithSimilarityModel similarityModel = new HadithSimilarityModel();
 			SimilarityStrategy strategy = new JaroWinklerStrategy();
 			StringSimilarityService service = new StringSimilarityServiceImpl(strategy);
 			double score = service.score(originTxt, h.getHadith()); 
-			dto.setIdOrigin(idOrigin);
-			dto.setIdTarget(h.getIdHadith());
-			dto.setSimilarity(score);
-			System.out.println(dto.toString());
-			return dto;
-		}).collectList().block().forEach(h -> System.out.println(h.toString()+"\n\n"));
+			similarityModel.setIdOrigin(idOrigin);
+			similarityModel.setIdTarget(h.getIdHadith());
+			similarityModel.setSimilarity(score);
+			System.out.println(similarityModel.toString());
+			return similarityModel;
+		}).collectList();//.block().forEach(h -> System.out.println(h.toString()+"\n\n"));
 		
+		reactiveMongoTemplate.insertAll(result);
 		
-		
-		return null;
+		return result;
 	}
 
 }

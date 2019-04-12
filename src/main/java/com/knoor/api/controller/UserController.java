@@ -30,7 +30,9 @@ import com.knoor.api.enums.MessageEnum;
 import com.knoor.api.exception.BusinessException;
 import com.knoor.api.exception.RestException;
 import com.knoor.api.model.HUser;
+import com.knoor.api.model.db.UserModel;
 import com.knoor.api.service.CloudMongoService;
+import com.knoor.api.service.reactive.UserService;
 import com.knoor.api.utils.SecurityUtils;
 
 
@@ -51,6 +53,9 @@ public class UserController  {
 	
 	@Autowired
 	private CloudMongoService cloudMongoService;
+	
+	@Autowired
+	private UserService userService;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
@@ -102,6 +107,23 @@ public class UserController  {
 
 			HUser createdUser = gson.fromJson(
 					cloudMongoService.findByExample(USER_COLLECTION_NAME, userDocument).get(0).toJson(), HUser.class);
+			return ResponseEntity.ok(createdUser);
+		} catch (BusinessException e) {
+			LOG.error(e.getMessage(),e);
+			throw new RestException(ErrorMessageEnum.USER_CREATION_KO.getMessage(e.getMessage()), e,
+					HttpStatus.INTERNAL_SERVER_ERROR, null);
+		}
+
+	}
+
+	@PostMapping(path = "/insert")
+	public ResponseEntity<UserModel> insertUser(@Valid @RequestBody UserModel user, HttpServletRequest request) throws RestException {
+		
+		//Encode password
+		String encodedPassword = passwordEncoder.encode(user.getPassword());
+		user.setPassword(encodedPassword);
+		try {
+			UserModel createdUser = userService.insert(user);
 			return ResponseEntity.ok(createdUser);
 		} catch (BusinessException e) {
 			LOG.error(e.getMessage(),e);

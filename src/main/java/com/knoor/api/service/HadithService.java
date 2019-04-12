@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
 
 import com.knoor.api.exception.BusinessException;
 import com.knoor.api.model.DuplicateInfos;
-import com.knoor.api.model.HadithModel;
+import com.knoor.api.model.db.HadithModel;
 
 import net.ricecode.similarity.JaroWinklerStrategy;
 import net.ricecode.similarity.SimilarityStrategy;

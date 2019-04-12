@@ -13,18 +13,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import com.knoor.api.enums.ErrorMessageEnum;
 import com.knoor.api.exception.BusinessException;
 import com.knoor.api.exception.RestException;
 import com.knoor.api.model.DuplicateInfos;
-import com.knoor.api.model.HadithModel;
+import com.knoor.api.model.db.HadithModel;
+import com.knoor.api.model.db.HadithSimilarityModel;
 import com.knoor.api.model.dto.HadithSimilarityDTO;
 import com.knoor.api.service.HadithService;
 import com.knoor.api.service.reactive.HadithReactiveService;
 
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api/v1/hadith")
@@ -32,8 +33,6 @@ public class HadithController {
 
 	private final Logger LOG = LoggerFactory.getLogger(HadithController.class);
 
-	@Autowired
-	private WebClient webClient;
 
 	@Autowired
 	private HadithReactiveService hadithReactiveService;
@@ -44,17 +43,17 @@ public class HadithController {
 	@GetMapping(path = "/duplicate")
 	@ResponseBody
 	public ResponseEntity<List<DuplicateInfos>> searchDuplicate(@RequestParam("start") long start,
-			@RequestParam("page") long page ) throws RestException {
+			@RequestParam("page") long page) throws RestException {
 
 		try {
-			List<DuplicateInfos> result = hadithService.getDuplicateHadith(start,page);
+			List<DuplicateInfos> result = hadithService.getDuplicateHadith(start, page);
 			LOG.info("full duplicate hadiths found ====>" + result.size());
 			return ResponseEntity.ok(result);
 		} catch (BusinessException e) {
 			LOG.error("Oooops", e);
 			throw new RestException(ErrorMessageEnum.DUPLICATE_HADITH_KO.getMessage(e.getMessage()), e,
 					HttpStatus.NOT_FOUND, null);
-		} 
+		}
 
 	}
 
@@ -80,47 +79,44 @@ public class HadithController {
 	@ResponseBody
 	public Flux<DuplicateInfos> searchAsyncDuplicate() throws RestException {
 		try {
-			Flux<DuplicateInfos> result =  hadithReactiveService.reactiveSearchFullDuplicate();
-			LOG.info("====> last duplicate: "+result.last().block());
+			Flux<DuplicateInfos> result = hadithReactiveService.reactiveSearchFullDuplicate();
+			LOG.info("====> last duplicate: " + result.last().block());
 			return result;
 		} catch (BusinessException e) {
 			LOG.error("Ooops", e);
 			throw new RestException(ErrorMessageEnum.DUPLICATE_HADITH_KO.getMessage(e.getMessage()), e,
 					HttpStatus.NOT_FOUND, null);
-		} 
+		}
 	}
-	
-	@GetMapping(path="/similarity/{idOrigin}/{similarity}")
-	public Flux<HadithSimilarityDTO> searchSimilarity(@PathVariable("idOrigin") long idOrigin,@PathVariable("similarity") float similarity) throws RestException{
-		
+
+	@GetMapping(path = "/similarity/{idOrigin}/{similarity}")
+	public Flux<HadithSimilarityDTO> searchSimilarity(@PathVariable("idOrigin") long idOrigin,
+			@PathVariable("similarity") float similarity) throws RestException {
+
 		try {
-			Flux<HadithSimilarityDTO> result =  hadithReactiveService.reactiveSearchSimilarity(idOrigin,similarity);
-			LOG.info("====> last duplicate: "+result);
+			Flux<HadithSimilarityDTO> result = hadithReactiveService.reactiveSearchSimilarity(idOrigin, similarity);
+			LOG.info("====> last duplicate: " + result);
 			return result;
 		} catch (BusinessException e) {
 			LOG.error("Ooops", e);
 			throw new RestException(ErrorMessageEnum.SIMILARITY_KO.getMessage(String.valueOf(idOrigin)), e,
 					HttpStatus.NOT_FOUND, null);
-		} 
-		
+		}
+
 	}
-	
-	
-	@GetMapping(path="/similarity/{idOrigin}")
-	public Flux<HadithSimilarityDTO> batchSimilarity(@PathVariable("idOrigin") long idOrigin) throws RestException{
-		
+
+	@GetMapping(path = "/similarity/{idOrigin}")
+	public Mono<List<HadithSimilarityModel>> batchSimilarity(@PathVariable("idOrigin") long idOrigin)
+			throws RestException {
+
 		try {
-			Flux<HadithSimilarityDTO> result =  hadithReactiveService.batchSimilarity(idOrigin);
-			LOG.info("====> last duplicate: "+result);
-			return result;
+			return hadithReactiveService.batchSimilarity(idOrigin);
 		} catch (BusinessException e) {
 			LOG.error("Ooops", e);
 			throw new RestException(ErrorMessageEnum.SIMILARITY_KO.getMessage(String.valueOf(idOrigin)), e,
 					HttpStatus.NOT_FOUND, null);
-		} 
-		
+		}
+
 	}
-	
-	
 
 }

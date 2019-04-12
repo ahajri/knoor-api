@@ -1,4 +1,4 @@
-package com.knoor.api.model;
+package com.knoor.api.model.db;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;

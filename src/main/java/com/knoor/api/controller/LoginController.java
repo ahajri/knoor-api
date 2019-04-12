@@ -26,7 +26,7 @@ import com.knoor.api.enums.OperatorEnum;
 import com.knoor.api.exception.BusinessException;
 import com.knoor.api.exception.RestException;
 import com.knoor.api.model.HUser;
-import com.knoor.api.model.UserModel;
+import com.knoor.api.model.db.UserModel;
 import com.knoor.api.model.dto.UserSessionDTO;
 import com.knoor.api.security.JwtTokenProvider;
 import com.knoor.api.security.LoginRequest;

@@ -34,8 +34,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/auth",
                 "/status",
                 "/swagger-ui.html",
-                "/webjars/**",
-                "/api/v1/user/**"
+                "/webjars/**"
         };
 
         LinkedList<RequestMatcher> matcherList = new LinkedList<>();
@@ -76,8 +75,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .antMatchers("/api/v1/event/**")
                 .authenticated()
-//                .antMatchers("/api/v1/user/**")
-//                .authenticated()
+                .antMatchers("/api/v1/user/**")
+                .authenticated()
                 .antMatchers("/api/v1/hadith/**")
                 .authenticated();
     }

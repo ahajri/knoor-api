@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.knoor.api.enums.ErrorMessageEnum;
 import com.knoor.api.exception.BusinessException;
-import com.knoor.api.model.UserModel;
+import com.knoor.api.model.db.UserModel;
 import com.knoor.api.model.dto.UserSessionDTO;
 import com.knoor.api.security.JwtTokenProvider;
 
@@ -60,6 +60,7 @@ public class LoginService {
 			result.setLastName(user.getLastName());
 			result.setGender(user.getGender());
 			result.setActif(user.isActif());
+			result.setEmail(email);
 			return result;
 		} else {
 			throw new BusinessException(ErrorMessageEnum.WRONG_PASSWORD.getMessage());

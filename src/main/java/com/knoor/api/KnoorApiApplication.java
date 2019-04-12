@@ -12,7 +12,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 @EnableMongoAuditing
 @EnableReactiveMongoRepositories
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.knoor"})
 @EnableAsync
 public class KnoorApiApplication {
 

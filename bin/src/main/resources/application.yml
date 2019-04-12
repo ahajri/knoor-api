@@ -2,15 +2,12 @@ mlab:
   db.host: ${MLAB_DB_HOST}
   db.name: ${MLAB_DB_NAME}
   db.user: ${MLAB_DB_USER}
-  #db.user: 
   db.port: ${MLAB_DB_PORT}
-  #db.password:
   db.password: ${MLAB_DB_PASSWORD}
   db.hadith.collection : ${MLAB_HADITH_COLLECTION}
   db.baseUrl: ${MLAB_DB_BASE_URL}
   api.key: ${MLAB_API_KEY}
 spring:
-  #data.mongodb.uri: mongodb://${MLAB_DB_HOST}:${MLAB_DB_PORT}/${MLAB_DB_NAME}
   data.mongodb.uri: mongodb://${MLAB_DB_USER}:${MLAB_DB_PASSWORD}@${MLAB_DB_HOST}:${MLAB_DB_PORT}/${MLAB_DB_NAME}
   servlet.multipart.enabled: true
   servlet.multipart.file-size-threshold: 2KB
