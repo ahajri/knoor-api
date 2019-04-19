@@ -1,9 +1,7 @@
 package com.knoor.api.security;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,47 +11,33 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.google.gson.Gson;
-import com.knoor.api.beans.QueryParam;
-import com.knoor.api.enums.OperatorEnum;
 import com.knoor.api.exception.BusinessException;
-import com.knoor.api.model.HUser;
-import com.knoor.api.service.CloudMongoService;
+import com.knoor.api.model.db.UserModel;
+import com.knoor.api.service.reactive.UserService;
 
 @Service("userDetailsService")
 public class KNUserDetailsService implements UserDetailsService {
 
-	private static final String USER_COLLECTION_NAME = "users";
-
 	private static final Logger LOG = LoggerFactory.getLogger(KNUserDetailsService.class);
 
 	@Autowired
-	private CloudMongoService cloudMongoService;
+	public KNUserDetailsService(UserService userService) {
+		this.userService = userService;
+	}
+
+	private UserService userService;
 
 	private Set<UserPrincipal> users = new HashSet<>();
 
-	private Gson gson = new Gson();
-
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
-		QueryParam[] qp = new QueryParam[1];
-		qp[0] = new QueryParam("email", OperatorEnum.EQ.name(), username);
-
 		try {
-			List<HUser> hUsers = cloudMongoService.search(USER_COLLECTION_NAME, qp).stream()
-					.map(d -> gson.fromJson(gson.toJson(d), HUser.class)).collect(Collectors.toList());
-
-			if (hUsers.size() > 1) {
-				throw new UsernameNotFoundException("More than one user found for username: " + username);
-			}
-			HUser user = hUsers.get(0);
-			UserPrincipal userPrincipal = new UserPrincipal(user.getEmail(), user.getPassword(),
-					user.getRoles());
+			UserModel model = userService.findByEmail(username);
+			UserPrincipal userPrincipal = new UserPrincipal(model.getEmail(), model.getPassword(), model.getRoles());
 			users.add(userPrincipal);
 			return userPrincipal;
 		} catch (BusinessException e) {
-			LOG.error("Utilisater " + username + " non trouvé", e);
+			LOG.error("User with email: " + username + " not found", e);
 			throw new UsernameNotFoundException("Utilisater " + username + " non trouvé");
 		}
 

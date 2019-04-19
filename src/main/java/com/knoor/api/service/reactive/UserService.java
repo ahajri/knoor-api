@@ -2,6 +2,8 @@ package com.knoor.api.service.reactive;
 
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
@@ -53,6 +55,11 @@ public class UserService implements IDBService<UserModel> {
 	@Override
 	public UserModel insert(UserModel model) throws BusinessException {
 		return mongoTemplate.insert(model);
+	}
+	
+	public UserModel findByEmail(@NotNull String email) throws BusinessException{
+		Query q  = new Query(Criteria.where("email").is(email));
+		return mongoTemplate.findOne(q, UserModel.class);
 	}
 
 }

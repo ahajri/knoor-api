@@ -2,10 +2,10 @@ package com.knoor.api.model.dto;
 
 import java.time.LocalDateTime;
 
-import lombok.ToString;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 
 @Getter

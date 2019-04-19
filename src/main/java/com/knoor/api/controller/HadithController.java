@@ -1,6 +1,10 @@
 package com.knoor.api.controller;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.async.DeferredResult;
 
 import com.knoor.api.enums.ErrorMessageEnum;
 import com.knoor.api.exception.BusinessException;
@@ -33,9 +38,10 @@ public class HadithController {
 
 	private final Logger LOG = LoggerFactory.getLogger(HadithController.class);
 
-
 	@Autowired
 	private HadithReactiveService hadithReactiveService;
+	
+	private final ExecutorService executor = Executors.newFixedThreadPool(4);
 
 	@Autowired
 	HadithService hadithService;
@@ -59,28 +65,16 @@ public class HadithController {
 
 	@GetMapping("/all")
 	public Flux<String> findAll() {
-
 		Flux<HadithModel> result = hadithReactiveService.reactiveFindAll();
 		return result.map(m -> m.getHadith());
 	}
 
-//	@GetMapping(value = "/customer/accounts/{pesel}")
-//	public Mono<DuplicateInfos> findByPeselWithAccounts() {
-//		return repository.findByPesel()
-//				.flatMap(customer -> webClient.get().uri("/account/customer/{customer}", customer.getId())
-//						.accept(MediaType.APPLICATION_JSON).exchange()
-//						.flatMap(response -> response.bodyToFlux(Account.class)))
-//				.collectList().map(l -> {
-//					return new Customer(pesel, l);
-//				});
-//	}
 
 	@GetMapping(path = "/async/duplicate")
 	@ResponseBody
 	public Flux<DuplicateInfos> searchAsyncDuplicate() throws RestException {
 		try {
 			Flux<DuplicateInfos> result = hadithReactiveService.reactiveSearchFullDuplicate();
-			LOG.info("====> last duplicate: " + result.last().block());
 			return result;
 		} catch (BusinessException e) {
 			LOG.error("Ooops", e);
@@ -110,12 +104,41 @@ public class HadithController {
 			throws RestException {
 
 		try {
-			return hadithReactiveService.batchSimilarity(idOrigin);
+			return hadithReactiveService.batchSimilarityBis(idOrigin);
 		} catch (BusinessException e) {
 			LOG.error("Ooops", e);
 			throw new RestException(ErrorMessageEnum.SIMILARITY_KO.getMessage(String.valueOf(idOrigin)), e,
 					HttpStatus.NOT_FOUND, null);
 		}
+
+	}
+
+	@GetMapping(path = "/similarity")
+	public Mono<Void> batchSimilarity() throws RestException {
+
+		return Mono.create(sink -> {
+			try {
+				hadithReactiveService.batchSimilarity();
+			} catch (BusinessException e) {
+				sink.error(e);
+			}
+
+			sink.success();
+		});
+
+	}
+	
+	@GetMapping(path = "/refine")
+	public ResponseEntity<Void> refineHadith() throws RestException {
+
+		try {
+			hadithReactiveService.refineText();
+		} catch (BusinessException e) {
+			throw new RestException(e);
+		}
+		
+		
+		return ResponseEntity.accepted().build();
 
 	}
 

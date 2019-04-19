@@ -63,7 +63,7 @@ public class HadithHandler {
 		hadiths.aggregate(
 				Arrays.asList(
 						group(eq("id", "$hadith"), 
-						addToSet("uniqueIds", "$idHadith"), 
+						addToSet("uniqueIds", "$id"), 
 						sum("total", 1L)),
 						match(gt("total", 1L)), 
 						sort(descending("total"))))

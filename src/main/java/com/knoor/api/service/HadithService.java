@@ -79,7 +79,7 @@ public class HadithService {
 	// com.mongodb.client.MongoCollection<Document> hadiths =
 	// mongoTemplate.getCollection(collectionName);
 	// hadiths.aggregate(
-	// Arrays.asList(group(eq("id", "$hadith"), addToSet("uniqueIds", "$idHadith"),
+	// Arrays.asList(group(eq("id", "$hadith"), addToSet("uniqueIds", "$id"),
 	// sum("total", 1L)),
 	// match(gt("total", 1L)), skip(start * page), limit(page),
 	// sort(descending("total"))))
@@ -101,7 +101,7 @@ public class HadithService {
 	public List<DuplicateInfos> getDuplicateHadith(long start, long page) throws BusinessException {
 		MatchOperation matchOps = Aggregation.match(Criteria.where("total").gt(1));
 		SortOperation sortOps = Aggregation.sort(new Sort(Sort.Direction.DESC, "total"));
-		GroupOperation groupOps = Aggregation.group("hadith").last("hadith").as("hadith").addToSet("idHadith")
+		GroupOperation groupOps = Aggregation.group("hadith").last("hadith").as("hadith").addToSet("id")
 				.as("uniqueIds").count().as("total");
 
 		LimitOperation limitOps = Aggregation.limit(page);
@@ -119,20 +119,20 @@ public class HadithService {
 
 	}
 
-	public static void main(String[] args) {
-		InputStream is = HadithService.class.getResourceAsStream("text1.txt");
-		InputStream is2 = HadithService.class.getResourceAsStream("text2.txt");
-		
-		String text1 = getText(is);
-		
-		
-		String text2 = getText(is2);
-		SimilarityStrategy strategy = new JaroWinklerStrategy();
-		StringSimilarityService service = new StringSimilarityServiceImpl(strategy);
-		double score = service.score(text1, text2); 
-		System.out.println("==> Similarity: "+score);
-		
-	}
+//	public static void main(String[] args) {
+//		InputStream is = HadithService.class.getResourceAsStream("text1.txt");
+//		InputStream is2 = HadithService.class.getResourceAsStream("text2.txt");
+//		
+//		String text1 = getText(is);
+//		
+//		
+//		String text2 = getText(is2);
+//		SimilarityStrategy strategy = new JaroWinklerStrategy();
+//		StringSimilarityService service = new StringSimilarityServiceImpl(strategy);
+//		double score = service.score(text1, text2); 
+//		System.out.println("==> Similarity: "+score);
+//		
+//	}
 
 	private static String getText(InputStream is) {
 		StringBuilder sb = new StringBuilder();

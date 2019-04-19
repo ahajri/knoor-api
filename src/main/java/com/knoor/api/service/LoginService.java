@@ -63,6 +63,7 @@ public class LoginService {
 			result.setEmail(email);
 			return result;
 		} else {
+			LOG.error(ErrorMessageEnum.WRONG_PASSWORD.getMessage());
 			throw new BusinessException(ErrorMessageEnum.WRONG_PASSWORD.getMessage());
 		}
 

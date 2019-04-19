@@ -26,7 +26,6 @@ import com.knoor.api.enums.OperatorEnum;
 import com.knoor.api.exception.BusinessException;
 import com.knoor.api.exception.RestException;
 import com.knoor.api.model.HUser;
-import com.knoor.api.model.db.UserModel;
 import com.knoor.api.model.dto.UserSessionDTO;
 import com.knoor.api.security.JwtTokenProvider;
 import com.knoor.api.security.LoginRequest;
@@ -60,7 +59,7 @@ public class LoginController {
 
 	private static final String USER_COLLECTION_NAME = "users";
 	
-	@PostMapping(path = "/auth")
+	@PostMapping(path = "/login")
 	public ResponseEntity<UserSessionDTO> auth(@Valid @RequestBody LoginRequest loginRequest) throws RestException {
 		try {
 			return ResponseEntity.ok(loginService.login(loginRequest.getEmail(),loginRequest.getPassword()));
@@ -72,7 +71,7 @@ public class LoginController {
 
 		
 
-	@PostMapping(path = "/login")
+	@PostMapping(path = "/login1")
 	public ResponseEntity<HUser> login(@Valid @RequestBody LoginRequest loginRequest) throws RestException {
 
 		HUser result = new HUser();

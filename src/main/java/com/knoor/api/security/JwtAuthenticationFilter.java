@@ -16,6 +16,11 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+/**
+ * 
+ * @author ahajri
+ *
+ */
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
