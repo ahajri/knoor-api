@@ -241,20 +241,25 @@ public class HadithReactiveService {
 					double targetRate = e.getValue();
 					if (originWordMap.containsKey(word)) {
 						double originRate = originWordMap.get(word);
-						scoreMap.put(word, originRate+targetRate);
+						if (targetRate>originRate) {
+							scoreMap.put(word, originRate/targetRate);
+						}else {
+							scoreMap.put(word, targetRate/originRate);
+						}
+						
 					}else {
-						scoreMap.put(word, targetRate);
+						scoreMap.put(word, Double.valueOf(1));
 					}
 				});
 			}
 			
-			double score = Precision.round(scoreMap.values().stream().reduce(0.0,(x,y)-> x+y), 2);
+			double score = Precision.round(scoreMap.values().stream().reduce(0.0,(x,y)-> x+y)/totalWords, 2);
 			System.out.println("[Origin: "+idOrigin+", Target: "+h.getId()+", similarity: "+score);
 			
 			
 			similarityModel.setIdOrigin(idOrigin);
 			similarityModel.setIdTarget(h.getId());
-			similarityModel.setSimilarity(Precision.round(scoreMap.get("score"), 2));
+			similarityModel.setSimilarity(Precision.round(score, 2));
 			similarityModel.setMethod("CUSTOM-JAVA");
 			return similarityModel;
 		}).collectList();
