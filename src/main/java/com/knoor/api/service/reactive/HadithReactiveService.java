@@ -5,9 +5,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.math3.util.Precision;
 import org.slf4j.Logger;
@@ -49,7 +46,7 @@ public class HadithReactiveService {
 
 	private static final List<String> allowedLetters = Arrays.asList("ا", "ب", "ت", "ث", "ج", "ح", "خ", "د", "ذ", "ر",
 			"ز", "س", "ش", "ص", "ض", "ط", "ظ", "ع", "غ", "ف", "ق", "ك", "ل", "م", "ن", "ه", "و", "ي", "ء", "١", "٢",
-			"٣", "٤", "٥", "٦", "٧", "٨", "٩", "٠", "ة", "أ", "إ", "آ", "ؤ", "ئ", "ى","؟");
+			"٣", "٤", "٥", "٦", "٧", "٨", "٩", "٠", "ة", "أ", "إ", "آ", "ؤ", "ئ", "ى","؟","?");
 
 	ReactiveMongoTemplate reactiveMongoTemplate;
 
@@ -184,7 +181,7 @@ public class HadithReactiveService {
 		System.out.println(String.format("{origin words : %s}",originWords.toString()));
 		
 		Query antiQ = new Query();
-		antiQ.addCriteria(Criteria.where("id").is(8440));
+		antiQ.addCriteria(Criteria.where("id").is(74988));
 
 		Flux<HadithModel> otherHadiths = reactiveMongoTemplate.find(antiQ, HadithModel.class);
 		
@@ -223,38 +220,36 @@ public class HadithReactiveService {
 			long targetSize = targetWordMap.size();
 						
 			final Map<String, Double> scoreMap = new HashMap<>();
-			scoreMap.put("score", Double.valueOf(0));
+			
 			
 			if (originSize >= targetSize) {
 				originWordMap.entrySet().forEach(e -> {
 					String word = e.getKey();
-					double score = scoreMap.get("score");
+					
 					double originRate = e.getValue();
 					if (targetWordMap.containsKey(word)) {
 						double targetRate = targetWordMap.get(word);
-						score+= originRate+targetRate;
-						scoreMap.put("score", score);
+						scoreMap.put(word, originRate+targetRate);
 					}else {
-						scoreMap.put("score", (score+originRate));
+						scoreMap.put(word, originRate);
 					}
 				});
 				
 			}else {
 				targetWordMap.entrySet().forEach(e -> {
 					String word = e.getKey();
-					double score = scoreMap.get("score");
 					double targetRate = e.getValue();
 					if (originWordMap.containsKey(word)) {
 						double originRate = originWordMap.get(word);
-						score+= originRate+targetRate;
-						scoreMap.put("score", score);
+						scoreMap.put(word, originRate+targetRate);
 					}else {
-						scoreMap.put("score", (score+targetRate));
+						scoreMap.put(word, targetRate);
 					}
 				});
 			}
 			
-			System.out.println("[Origin: "+idOrigin+", Target: "+h.getId()+", similarity: "+Precision.round(scoreMap.get("score"), 2));
+			double score = Precision.round(scoreMap.values().stream().reduce(0.0,(x,y)-> x+y), 2);
+			System.out.println("[Origin: "+idOrigin+", Target: "+h.getId()+", similarity: "+score);
 			
 			
 			similarityModel.setIdOrigin(idOrigin);
@@ -337,7 +332,7 @@ public class HadithReactiveService {
 				buff.append(String.valueOf(t[i]));
 			}
 		}
-		return buff.toString();
+		return buff.toString().trim();
 	}
 
 	private ArrayList<String> getWords(String SInput) {
