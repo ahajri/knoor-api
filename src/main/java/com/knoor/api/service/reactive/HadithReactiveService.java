@@ -6,7 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.util.Precision;
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,7 @@ import org.springframework.data.mongodb.core.query.Term;
 import org.springframework.data.mongodb.core.query.TextCriteria;
 import org.springframework.stereotype.Service;
 
+import com.knoor.api.enums.TXT_SIMILARITY;
 import com.knoor.api.exception.BusinessException;
 import com.knoor.api.model.DuplicateInfos;
 import com.knoor.api.model.db.HadithModel;
@@ -46,7 +49,7 @@ public class HadithReactiveService {
 
 	private static final List<String> allowedLetters = Arrays.asList("ا", "ب", "ت", "ث", "ج", "ح", "خ", "د", "ذ", "ر",
 			"ز", "س", "ش", "ص", "ض", "ط", "ظ", "ع", "غ", "ف", "ق", "ك", "ل", "م", "ن", "ه", "و", "ي", "ء", "١", "٢",
-			"٣", "٤", "٥", "٦", "٧", "٨", "٩", "٠", "ة", "أ", "إ", "آ", "ؤ", "ئ", "ى","؟","?");
+			"٣", "٤", "٥", "٦", "٧", "٨", "٩", "٠", "ة", "أ", "إ", "آ", "ؤ", "ئ", "ى", "؟", "?");
 
 	ReactiveMongoTemplate reactiveMongoTemplate;
 
@@ -65,7 +68,11 @@ public class HadithReactiveService {
 	@Value("${mlab.db.hadith.collection}")
 	protected String collectionName;
 
-	public Mono<HadithModel> reactiveFindById(String id) {
+	public Mono<HadithModel> reactiveFindByIdHadith(Long idHadith) {
+		Query q = new Query(Criteria.where("id").is(idHadith));
+		return reactiveMongoTemplate.findOne(q, HadithModel.class);
+	}
+	public Mono<HadithModel> reactiveFindById(ObjectId id) {
 		return reactiveMongoTemplate.findById(id, HadithModel.class);
 	}
 
@@ -137,6 +144,8 @@ public class HadithReactiveService {
 	}
 
 	/**
+	 * 169319
+	 * 74987
 	 * 
 	 * @param idOrigin: ID of Hadith
 	 * @return {@link Flux} of {@link HadithSimilarityDTO}
@@ -147,7 +156,7 @@ public class HadithReactiveService {
 		q.addCriteria(Criteria.where("id").is(idOrigin));
 		Mono<HadithModel> monoHadith = reactiveMongoTemplate.findOne(q, HadithModel.class);
 		HadithModel hadith = monoHadith.block();
-		String originTxt = hadith.getHadith();
+		String originTxt = hadith.getCleanedHadith();
 
 		Query antiQ = new Query();
 		antiQ.addCriteria(Criteria.where("id").ne(idOrigin));
@@ -156,21 +165,36 @@ public class HadithReactiveService {
 		SimilarityStrategy strategy = new JaroWinklerStrategy();
 		StringSimilarityService service = new StringSimilarityServiceImpl(strategy);
 
-		Mono<List<HadithSimilarityModel>> result = otherHadiths.map(h -> {
-			HadithSimilarityModel similarityModel = new HadithSimilarityModel();
-			double score = service.score(originTxt, h.getCleanedHadith());
-			similarityModel.setIdOrigin(idOrigin);
-			similarityModel.setIdTarget(h.getId());
-			similarityModel.setSimilarity(Precision.round(score, 2));
-			similarityModel.setMethod("JAVA");
-			return similarityModel;
-		}).collectList();
+		Mono<List<HadithSimilarityModel>> result = otherHadiths
+				.filter(h -> {
+					double score = service.score(originTxt, h.getCleanedHadith());
+					double presicision = Precision.round(score, 2);
+					if (presicision>=0.8) {
+						System.out.println(String.format("Similarity between %d and %d is %.2f", idOrigin,h.getId(),presicision));
+					}
+					return presicision>=0.8;
+				})
+				.map(h -> {
+					HadithSimilarityModel similarityModel = new HadithSimilarityModel();
+					double score = service.score(originTxt, h.getCleanedHadith());
+					similarityModel.setIdOrigin(idOrigin);
+					similarityModel.setIdTarget(h.getId());
+					double precision = Precision.round(score, 2);
+					if (precision == 1) {
+						similarityModel.setSimilarity(TXT_SIMILARITY.SIMILAR_100);
+					} else if (precision >= 0.8) {
+						similarityModel.setSimilarity(TXT_SIMILARITY.SIMILAR_GTE_80);
+					}
+					similarityModel.setSimilarityRate(precision);
+					similarityModel.setMethod("JAVA");
+					return similarityModel;
+				}).collectList();
 
 		reactiveMongoTemplate.insertAll(result).subscribe();
 
 		return result;
 	}
-	
+
 	public Mono<List<HadithSimilarityModel>> batchSimilarityBis(long idOrigin) throws BusinessException {
 		Query q = new Query();
 		q.addCriteria(Criteria.where("id").is(idOrigin));
@@ -178,117 +202,117 @@ public class HadithReactiveService {
 		HadithModel hadith = monoHadith.block();
 		String originTxt = hadith.getHadith();
 		final ArrayList<String> originWords = getWords(originTxt);
-		System.out.println(String.format("{origin words : %s}",originWords.toString()));
-		
+		System.out.println(String.format("{origin words : %s}", originWords.toString()));
+
 		Query antiQ = new Query();
-		antiQ.addCriteria(Criteria.where("id").is(74988));
+		antiQ.addCriteria(Criteria.where("id").ne(idOrigin));
 
 		Flux<HadithModel> otherHadiths = reactiveMongoTemplate.find(antiQ, HadithModel.class);
-		
 
 		Mono<List<HadithSimilarityModel>> result = otherHadiths.map(h -> {
 			HadithSimilarityModel similarityModel = new HadithSimilarityModel();
 			ArrayList<String> targetWords = getWords(h.getCleanedHadith());
-			System.out.println(String.format("{target words : %s}",targetWords.toString()));
-			long totalWords = originWords.size()+targetWords.size();
-			System.out.println(String.format("{total words : %d}",totalWords));
+			System.out.println(String.format("{target words : %s}", targetWords.toString()));
+			long totalWords = originWords.size() + targetWords.size();
+			System.out.println(String.format("{total words : %d}", totalWords));
 			Map<String, Double> originWordMap = new HashMap<>();
-			originWords.stream().forEach(w-> {
+			originWords.stream().forEach(w -> {
 				if (originWordMap.containsKey(w)) {
 					double count = originWordMap.get(w);
-					originWordMap.put(w, count+(1/totalWords));
+					originWordMap.put(w, count + (1 / totalWords));
 				} else {
-					originWordMap.put(w, (new Double(1)/totalWords));
+					originWordMap.put(w, (new Double(1) / totalWords));
 				}
 			});
-			System.out.println(String.format("{origin map  words : %s}",originWordMap.toString()));
-			//get rate of every word
-			
+			System.out.println(String.format("{origin map  words : %s}", originWordMap.toString()));
+			// get rate of every word
+
 			Map<String, Double> targetWordMap = new HashMap<>();
-			
-			targetWords.stream().forEach(w-> {
+
+			targetWords.stream().forEach(w -> {
 				if (targetWordMap.containsKey(w)) {
 					double count = targetWordMap.get(w);
-					targetWordMap.put(w, count+(1/totalWords));
+					targetWordMap.put(w, count + (1 / totalWords));
 				} else {
-					targetWordMap.put(w, (new Double(1)/totalWords));
+					targetWordMap.put(w, (new Double(1) / totalWords));
 				}
 			});
-			System.out.println(String.format("{target map  words : %s}",targetWordMap.toString()));
+			System.out.println(String.format("{target map  words : %s}", targetWordMap.toString()));
 			//
 			long originSize = originWordMap.size();
 			long targetSize = targetWordMap.size();
-						
+
 			final Map<String, Double> scoreMap = new HashMap<>();
-			
-			
+
 			if (originSize >= targetSize) {
 				originWordMap.entrySet().forEach(e -> {
 					String word = e.getKey();
-					
+
 					double originRate = e.getValue();
 					if (targetWordMap.containsKey(word)) {
 						double targetRate = targetWordMap.get(word);
-						scoreMap.put(word, originRate+targetRate);
-					}else {
+						scoreMap.put(word, originRate + targetRate);
+					} else {
 						scoreMap.put(word, originRate);
 					}
 				});
-				
-			}else {
+
+			} else {
 				targetWordMap.entrySet().forEach(e -> {
 					String word = e.getKey();
 					double targetRate = e.getValue();
 					if (originWordMap.containsKey(word)) {
 						double originRate = originWordMap.get(word);
-						if (targetRate>originRate) {
-							scoreMap.put(word, originRate/targetRate);
-						}else {
-							scoreMap.put(word, targetRate/originRate);
+						if (targetRate > originRate) {
+							scoreMap.put(word, originRate / targetRate);
+						} else {
+							scoreMap.put(word, targetRate / originRate);
 						}
-						
-					}else {
+
+					} else {
 						scoreMap.put(word, Double.valueOf(1));
 					}
 				});
 			}
-			
-			double score = Precision.round(scoreMap.values().stream().reduce(0.0,(x,y)-> x+y)/totalWords, 2);
-			System.out.println("[Origin: "+idOrigin+", Target: "+h.getId()+", similarity: "+score);
-			
-			
+
+			double score = Precision.round(scoreMap.values().stream().reduce(0.0, (x, y) -> x + y) / totalWords, 2);
+			System.out.println("[Origin: " + idOrigin + ", Target: " + h.getId() + ", similarity: " + score);
+
 			similarityModel.setIdOrigin(idOrigin);
 			similarityModel.setIdTarget(h.getId());
-			similarityModel.setSimilarity(Precision.round(score, 2));
+			double presicision = Precision.round(score, 2);
+			if (presicision == 1) {
+				similarityModel.setSimilarity(TXT_SIMILARITY.SIMILAR_100);
+			} else if (presicision >= 0.8) {
+				similarityModel.setSimilarity(TXT_SIMILARITY.SIMILAR_GTE_80);
+			}
 			similarityModel.setMethod("CUSTOM-JAVA");
 			return similarityModel;
 		}).collectList();
 
-		//reactiveMongoTemplate.insertAll(result).subscribe();
+		// reactiveMongoTemplate.insertAll(result).subscribe();
 
 		return result;
 	}
-	
+
 	public void refineText() throws BusinessException {
-		List<HadithModel> hadiths = mongoTemplate.findAll( HadithModel.class);
+		List<HadithModel> hadiths = mongoTemplate.findAll(HadithModel.class);
 
 		hadiths.stream().forEach(h -> {
-			h.setCleanedHadith(getCleanedText(h.getHadith()));
+			h.setCleanedHadith(getCleanedText(h.getHadith(), h.getSanad()).trim());
 			mongoTemplate.save(h);
 		});
 
 	}
 
-	
 	public void batchSimilarity() throws BusinessException {
 
 		Query query = new Query();
-		query.with(new Sort(Sort.Direction.ASC, "id"));
 
 		List<HadithModel> hadiths = mongoTemplate.find(query, HadithModel.class);
 
 		hadiths.stream().forEach(h -> {
-			h.setCleanedHadith(getCleanedText(h.getHadith()));
+			h.setCleanedHadith(getCleanedText(h.getHadith(), h.getSanad()));
 		});
 
 		/*
@@ -317,15 +341,22 @@ public class HadithReactiveService {
 
 	}
 
+	private String getCleanedText(String txt, String sanad) {
+		
+		// substring sanad
+		if (StringUtils.isNotBlank(sanad)) {
+			sanad = getCleanedText(sanad);
+			txt.replace(sanad, "");
+		}
+		return getCleanedText(txt);
+	}
+
 	private String getCleanedText(String txt) {
-
 		StringBuffer buffer = new StringBuffer();
-
 		getWords(txt).stream().forEach(w -> {
 			buffer.append(getCleanWord(w));
 			buffer.append(" ");
 		});
-
 		return buffer.toString();
 	}
 
@@ -356,4 +387,6 @@ public class HadithReactiveService {
 		}
 		return all_Words_List;
 	}
+	
+
 }

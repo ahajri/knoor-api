@@ -3,6 +3,7 @@ package com.knoor.api.model.db;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.knoor.api.enums.TXT_SIMILARITY;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -22,7 +23,8 @@ import lombok.ToString;
 public class HadithSimilarityModel {
 	
 	private long idOrigin,idTarget;
-	private double similarity;
+	private TXT_SIMILARITY  similarity;
+	double similarityRate;
 	private String method;
 
 }

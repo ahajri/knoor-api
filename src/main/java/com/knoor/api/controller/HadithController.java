@@ -1,10 +1,8 @@
 package com.knoor.api.controller;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.async.DeferredResult;
 
 import com.knoor.api.enums.ErrorMessageEnum;
 import com.knoor.api.exception.BusinessException;
@@ -62,6 +59,11 @@ public class HadithController {
 		}
 
 	}
+	
+	@GetMapping(path = "/{idHadith}")
+	public Mono<HadithModel> searchHadithByIdHadith(@PathVariable("idHadith") long idHadith)  throws RestException{
+		return hadithReactiveService.reactiveFindByIdHadith(idHadith);
+	}
 
 	@GetMapping("/all")
 	public Flux<String> findAll() {
@@ -104,7 +106,7 @@ public class HadithController {
 			throws RestException {
 
 		try {
-			return hadithReactiveService.batchSimilarityBis(idOrigin);
+			return hadithReactiveService.batchSimilarity(idOrigin);
 		} catch (BusinessException e) {
 			LOG.error("Ooops", e);
 			throw new RestException(ErrorMessageEnum.SIMILARITY_KO.getMessage(String.valueOf(idOrigin)), e,
