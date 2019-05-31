@@ -101,12 +101,13 @@ public class HadithController {
 
 	}
 
-	@GetMapping(path = "/similarity/{idOrigin}")
-	public Mono<List<HadithSimilarityModel>> batchSimilarity(@PathVariable("idOrigin") long idOrigin)
+	@GetMapping(path = "/similarity-rate/{idOrigin}/{similarityRate}")
+	public Mono<List<HadithSimilarityModel>> batchSimilarity(@PathVariable("idOrigin") long idOrigin, 
+			@PathVariable("similarityRate") double similarityRate)
 			throws RestException {
 
 		try {
-			return hadithReactiveService.batchSimilarity(idOrigin);
+			return hadithReactiveService.batchSimilarity(idOrigin,similarityRate);
 		} catch (BusinessException e) {
 			LOG.error("Ooops", e);
 			throw new RestException(ErrorMessageEnum.SIMILARITY_KO.getMessage(String.valueOf(idOrigin)), e,

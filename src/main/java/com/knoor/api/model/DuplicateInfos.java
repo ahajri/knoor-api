@@ -5,6 +5,11 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class DuplicateInfos implements Serializable {
 
@@ -13,7 +18,7 @@ public class DuplicateInfos implements Serializable {
 	 */
 	private static final long serialVersionUID = 2175511483562824267L;
 
-	private String hadith;
+	private String cleanedHadith;
 	private List<Long> uniqueIds;
 	private long total;
 
@@ -22,45 +27,20 @@ public class DuplicateInfos implements Serializable {
 	}
 	
 
-	public DuplicateInfos(String hadith, List<Long> uniqueIds, long total) {
+	public DuplicateInfos(String cleanedHadith, List<Long> uniqueIds, long total) {
 		super();
-		this.hadith = hadith;
+		this.cleanedHadith = cleanedHadith;
 		this.uniqueIds = uniqueIds;
 		this.total = total;
 	}
 
 
-	public List<Long> getUniqueIds() {
-		return uniqueIds;
-	}
-
-	public void setUniqueIds(List<Long> uniqueIds) {
-		this.uniqueIds = uniqueIds;
-	}
-
-	public long getTotal() {
-		return total;
-	}
-
-	public void setTotal(long total) {
-		this.total = total;
-	}
-
 	
-	
-	public String getHadith() {
-		return hadith;
-	}
-
-
-	public void setHadith(String hadith) {
-		this.hadith = hadith;
-	}
 
 
 	@Override
 	public String toString() {
-		return "DuplicateInfos [hadith=" + hadith + ", uniqueIds=" + uniqueIds + ", total=" + total + "]";
+		return "DuplicateInfos [cleanedHadith=" + cleanedHadith + ", uniqueIds=" + uniqueIds + ", total=" + total + "]";
 	}
 
 

@@ -38,8 +38,6 @@ public class UserService implements IDBService<UserModel> {
 		 return mongoTemplate.save(model);
 	}
 
-	
-
 	@Override
 	public void delete(UserModel model) throws BusinessException {
 		mongoTemplate.remove(model);

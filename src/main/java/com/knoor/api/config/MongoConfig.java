@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.ReactiveMongoOperations;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRepositories;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
@@ -30,6 +29,11 @@ public class MongoConfig {
 	@Autowired
 	com.mongodb.MongoClient mongoClient;
 
+
+	@Bean
+	public  WebClient webClient() {
+	    return WebClient.builder().clientConnector(new ReactorClientHttpConnector()).baseUrl(baseUrl).build();
+	}
 	
 
 	@Bean
@@ -43,9 +47,5 @@ public class MongoConfig {
 	}
 	
 	
-	@Bean
-	public  WebClient webClient() {
-	    return WebClient.builder().clientConnector(new ReactorClientHttpConnector()).baseUrl(baseUrl).build();
-	}
 
 }
